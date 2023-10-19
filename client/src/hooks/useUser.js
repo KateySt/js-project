@@ -1,4 +1,4 @@
-import {useCallback, useState} from "react";
+import {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {registerUserAsync, selectJwt} from "../features/users/UsersSlice.js";
 
@@ -6,29 +6,18 @@ function useUser() {
     const dispatch = useDispatch();
     const [user, setUser] = useState(null);
     const [isRegisterLoading, setIsRegisterLoading] = useState(false);
-    const [registerInfo, setRegisterInfo] = useState({
-        name: "",
-        email: "",
-        password: "",
-    });
     const jwt = useSelector(selectJwt);
 
-    const updateRegisterInfo = useCallback((info) => {
-        setRegisterInfo(info);
-    }, []);
-
-    const registerUser = (e) => {
-        e.preventDefault();
+    const updateRegisterInfo = (values, actions) => {
         setIsRegisterLoading(true);
-        dispatch(registerUserAsync(registerInfo));
-        localStorage.setItem("User", JSON.stringify(registerInfo));
+        dispatch(registerUserAsync(values));
+        localStorage.setItem("User", JSON.stringify(values));
         setIsRegisterLoading(false);
-    };
+        actions.setSubmitting(false);
+    }
 
     return {
-        registerInfo,
         updateRegisterInfo,
-        registerUser,
         isRegisterLoading,
     };
 }

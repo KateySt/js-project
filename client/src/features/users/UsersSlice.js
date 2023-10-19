@@ -18,11 +18,11 @@ export const UsersSlice = createSlice({
     },
 });
 
-export const {register, setErr, setUser} = UsersSlice.actions;
+export const {register, setUser} = UsersSlice.actions;
 
 export const selectJwt = (state) => state.users.jwt;
 export const registerUserAsync = (element) => (dispatch) => {
-    axios({
+    const result = axios({
         method: 'post',
         url: 'users/register',
         data: element
