@@ -1,25 +1,24 @@
 import React from 'react';
 import {Button, Col, Form, Row, Stack} from "react-bootstrap";
-import useUser from "../../hooks/useUser.js";
+import {LoginSchema, SignupSchema} from "../register/schema/SignupSchema.js";
 import {Field, Formik} from "formik";
-import {SignupSchema} from "./schema/SignupSchema.js";
+import useUser from "../../hooks/useUser.js";
 
-const Register = () => {
+const Login = () => {
 
     const {
-        register,
-        isLoading
+        isLoading,
+        login,
     } = useUser();
 
     return (
         <Formik
             initialValues={{
-                name: "",
                 email: "",
                 password: "",
             }}
-            validationSchema={SignupSchema}
-            onSubmit={register}>
+            validationSchema={LoginSchema}
+            onSubmit={login}>
             {({errors, touched, handleSubmit}) => {
                 return (
                     <>
@@ -31,15 +30,7 @@ const Register = () => {
                             }}>
                                 <Col xs={6}>
                                     <Stack gap={3}>
-                                        <h2>Register</h2>
-
-                                        <Field name="name"
-                                               placeholder="name"
-                                               required/>
-                                        {errors.name && touched.name ? (
-                                            <div>{errors.name}</div>
-                                        ) : null}
-
+                                        <h2>Login</h2>
                                         <Field name="email"
                                                type="email"
                                                placeholder="email"
@@ -47,7 +38,6 @@ const Register = () => {
                                         {errors.email && touched.email ? (
                                             <div>{errors.email}</div>
                                         ) : null}
-
                                         <Field name="password"
                                                type="password"
                                                placeholder="password"
@@ -56,7 +46,7 @@ const Register = () => {
                                             <div>{errors.password}</div>
                                         ) : null}
                                         <Button variant="primary" type="submit">
-                                            {isLoading ? "Creating" : "Register"}
+                                            {isLoading ? "Creating" : "Login"}
                                         </Button>
                                     </Stack>
                                 </Col>
@@ -69,4 +59,11 @@ const Register = () => {
     );
 }
 
-export default Register;
+export default Login;
+/*
+ <Alert variant="danger">
+                                <p>
+                                    An error occurred
+                                </p>
+                            </Alert>
+ */
