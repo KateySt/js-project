@@ -9,8 +9,11 @@ export const useRecipient = (chat) => {
     const recipient = useSelector(selectRecipient);
 
     useEffect(() => {
-        dispatch(findUserAsync(recipientId));
-    }, []);
+        if (recipientId) {
+            dispatch(findUserAsync(recipientId));
+        }
+    }, [recipientId]);
+
     return {
         recipient
     };

@@ -3,26 +3,43 @@ import useChat from "../../hooks/useChat.js";
 import {Container, Stack} from "react-bootstrap";
 import UserChat from "../../components/chat/UserChat.jsx";
 import PotentialChat from "../../components/chat/PotentialChat.jsx";
+import ChatBox from "../../components/chat/ChatBox.jsx";
 
 const Chat = () => {
-    const {chatsInfo, isLoading} = useChat();
+    const {
+        chatsInfo,
+        isChatLoading,
+        updateCurrentChat,
+        currentChat,
+        potentialChat,
+        creatChat,
+        isMessageLoading,
+        messages
+    } = useChat();
 
     return (
         <Container>
-            <PotentialChat/>
+            <PotentialChat potentialChat={potentialChat} creatChat={creatChat}/>
             {chatsInfo?.lenght ? null :
                 <Stack direction="horizontal" gap={4} className="align-items-start">
                     <Stack className="messages-box flex-grow-0 pe-3" gap={3}>
-                        {isLoading && <p>Loading chat ...</p>}
+                        {isChatLoading && <p>Loading chat ...</p>}
                         {chatsInfo?.map((value, index) => {
                                 return (
-                                    <div key={`row--  ${index}`}>
+                                    <div key={`row--  ${index}`}
+                                         onClick={() => updateCurrentChat(value)}
+                                    >
                                         <UserChat data={value}/>
                                     </div>
                                 )
                             }
                         )}
                     </Stack>
+                    <ChatBox
+                        data={currentChat}
+                        isLoading={isMessageLoading}
+                        messages={messages}
+                    />
                 </Stack>
             }
         </Container>

@@ -1,8 +1,9 @@
 import useChat from "../../hooks/useChat.js";
+import {useSelector} from "react-redux";
+import {selectUser} from "../../features/user/UsersSlice.js";
 
-const PotentialChat = () => {
-    const {potentialChat, creatChat, user} = useChat();
-
+const PotentialChat = ({potentialChat, creatChat}) => {
+    const user = useSelector(selectUser);
     return (
         <>
             <div className="all-users">

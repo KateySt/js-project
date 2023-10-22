@@ -10,6 +10,7 @@ export const MessagesSlice = createSlice({
     reducers: {
         createMessage: (state, action) => {
             state.message = action.payload;
+            state.messages = [...state.messages, action.payload];
         },
         getMessages: (state, action) => {
             state.messages = action.payload;
@@ -17,10 +18,10 @@ export const MessagesSlice = createSlice({
     },
 });
 
-export const {createMessage,getMessages} = MessagesSlice.actions;
+export const {createMessage, getMessages} = MessagesSlice.actions;
 
-export const selectMessage = (state) => state.messages.messages;
-export const selectMessages = (state) => state.messages.message;
+export const selectMessages = (state) => state.messages.messages;
+export const selectMessage = (state) => state.messages.message;
 export const createMessageAsync = (element) => (dispatch) => {
     axios({
         method: 'post',
