@@ -1,10 +1,11 @@
 import React from 'react';
 import {Stack} from "react-bootstrap";
-import {useSelector} from "react-redux";
-import {selectUser} from "../../features/user/UsersSlice.js";
 import avatar from "../../assets/undraw_profile_pic_re_iwgo.svg";
+import {useRecipient} from "../../hooks/useRecipient.js";
+
 const UserChat = ({data}) => {
-    const user = useSelector(selectUser);
+    const {recipient} = useRecipient(data);
+
     return (
         <Stack
             direction="horizontal"
@@ -17,7 +18,7 @@ const UserChat = ({data}) => {
                     <img src={avatar} height="35px"/>
                 </div>
                 <div className="text-content">
-                    <div className="name">{user?.name}</div>
+                    <div className="name">{recipient?.name}</div>
                     <div className="text">Text message</div>
                 </div>
             </div>

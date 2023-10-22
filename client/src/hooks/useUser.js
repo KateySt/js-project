@@ -1,12 +1,12 @@
 import {useCallback, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {
-    getUser,
     loginUserAsync,
     logoutUser,
     registerUserAsync,
     selectJwt,
     selectUser,
+    setUser,
     setUserAsync
 } from "../features/user/UsersSlice.js";
 import jwt from 'jwt-decode';
@@ -42,7 +42,7 @@ function useUser() {
     useEffect(() => {
         const storedUser = localStorage.getItem("User");
         if (storedUser) {
-            dispatch(getUser(JSON.parse(storedUser)));
+            dispatch(setUser(JSON.parse(storedUser)));
         }
     }, []);
 

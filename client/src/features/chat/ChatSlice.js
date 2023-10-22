@@ -10,6 +10,7 @@ export const ChatsSlice = createSlice({
     reducers: {
         createChat: (state, action) => {
             state.chat = action.payload;
+            state.chats = [...state.chats, action.payload];
         },
         findUserChats: (state, action) => {
             state.chats = action.payload;

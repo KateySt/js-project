@@ -4,13 +4,20 @@ import {createSlice} from "@reduxjs/toolkit";
 export const UsersSlice = createSlice({
     name: 'users',
     initialState: {
-        usersList: [],
+        users: [],
         jwt: "",
         user: null,
+        recipient: null,
     },
     reducers: {
-        getUser: (state, action) => {
+        setRecipient: (state, action) => {
+            state.recipient = action.payload;
+        },
+        setUser: (state, action) => {
             state.user = action.payload;
+        },
+        findUsers: (state, action) => {
+            state.users = action.payload;
         },
         register: (state, action) => {
             state.jwt = action.payload;
@@ -25,10 +32,12 @@ export const UsersSlice = createSlice({
     },
 });
 
-export const {register, getUser, login,logoutUser} = UsersSlice.actions;
+export const {register, setRecipient, setUser, login, findUsers, logoutUser} = UsersSlice.actions;
 
 export const selectJwt = (state) => state.users.jwt;
 export const selectUser = (state) => state.users.user;
+export const selectRecipient = (state) => state.users.recipient;
+export const selectUsers = (state) => state.users.users;
 export const registerUserAsync = (element) => (dispatch) => {
     axios({
         method: 'post',
@@ -53,7 +62,24 @@ export const setUserAsync = (element) => (dispatch) => {
         method: 'get',
         url: `users/find/${element}`,
     })
-        .then((user) => dispatch(getUser(user.data)))
+        .then((user) => dispatch(setUser(user.data)))
+        .catch((err) => console.log(err));
+}
+
+export const findUserAsync = (element) => (dispatch) => {
+    axios({
+        method: 'get',
+        url: `users/find/${element}`,
+    })
+        .then((user) => dispatch(setRecipient(user.data)))
+        .catch((err) => console.log(err));
+}
+export const findUsersAsync = () => (dispatch) => {
+    axios({
+        method: 'get',
+        url: 'users',
+    })
+        .then((users) => dispatch(findUsers(users.data)))
         .catch((err) => console.log(err));
 }
 export default UsersSlice.reducer;
