@@ -5,7 +5,6 @@ import {useRecipient} from "../../hooks/useRecipient.js";
 
 const UserChat = ({data}) => {
     const {recipient} = useRecipient(data);
-
     return (
         <Stack
             direction="horizontal"
@@ -15,7 +14,7 @@ const UserChat = ({data}) => {
         >
             <div className="d-flex">
                 <div className="me-2">
-                    <img src={avatar} height="35px"/>
+                    <img src={avatar} height="35px" alt="avatar"/>
                 </div>
                 <div className="text-content">
                     <div className="name">{recipient?.name}</div>

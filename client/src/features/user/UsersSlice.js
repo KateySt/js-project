@@ -7,12 +7,8 @@ export const UsersSlice = createSlice({
         users: [],
         jwt: "",
         user: null,
-        recipient: null,
     },
     reducers: {
-        setRecipient: (state, action) => {
-            state.recipient = action.payload;
-        },
         setUser: (state, action) => {
             state.user = action.payload;
         },
@@ -32,11 +28,10 @@ export const UsersSlice = createSlice({
     },
 });
 
-export const {register, setRecipient, setUser, login, findUsers, logoutUser} = UsersSlice.actions;
+export const {register, setUser, login, findUsers, logoutUser} = UsersSlice.actions;
 
 export const selectJwt = (state) => state.users.jwt;
 export const selectUser = (state) => state.users.user;
-export const selectRecipient = (state) => state.users.recipient;
 export const selectUsers = (state) => state.users.users;
 export const registerUserAsync = (element) => (dispatch) => {
     axios({
@@ -63,15 +58,6 @@ export const setUserAsync = (element) => (dispatch) => {
         url: `users/find/${element}`,
     })
         .then((user) => dispatch(setUser(user.data)))
-        .catch((err) => console.log(err));
-}
-
-export const findUserAsync = (element) => (dispatch) => {
-    axios({
-        method: 'get',
-        url: `users/find/${element}`,
-    })
-        .then((user) => dispatch(setRecipient(user.data)))
         .catch((err) => console.log(err));
 }
 export const findUsersAsync = () => (dispatch) => {

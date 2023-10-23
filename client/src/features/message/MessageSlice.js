@@ -37,7 +37,7 @@ export const getMessagesAsync = (element) => (dispatch) => {
         method: 'get',
         url: `messages/${element}`,
     })
-        .then((mes) => dispatch(getMessages(mes.data)))
+        .then((mes) =>dispatch(getMessages(mes.data)))
         .catch((err) => console.log(err));
 }
 export default MessagesSlice.reducer;

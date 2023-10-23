@@ -1,4 +1,3 @@
-import useChat from "../../hooks/useChat.js";
 import {useSelector} from "react-redux";
 import {selectUser} from "../../features/user/UsersSlice.js";
 

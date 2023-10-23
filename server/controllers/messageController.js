@@ -1,9 +1,9 @@
 const messageModel = require("../models/messageModel");
 
 const createMessage = async (req, res) => {
-    const {chartId, senderId, text} = req.body;
+    const {chatId, senderId, text} = req.body;
     const message = new messageModel({
-        chartId,
+        chatId,
         senderId,
         text,
     });
@@ -17,10 +17,10 @@ const createMessage = async (req, res) => {
 }
 
 const getMessages = async (req, res) => {
-    const {chartId} = req.params;
+    const {chatId} = req.params;
 
     try {
-        const messages = await messageModel.find({chartId});
+        const messages = await messageModel.find({chatId});
         res.status(200).json(messages);
     } catch (err) {
         console.log(err);

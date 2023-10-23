@@ -14,7 +14,7 @@ const Chat = () => {
         potentialChat,
         creatChat,
         isMessageLoading,
-        messages
+        sendTextMessage,
     } = useChat();
 
     return (
@@ -38,7 +38,7 @@ const Chat = () => {
                     <ChatBox
                         data={currentChat}
                         isLoading={isMessageLoading}
-                        messages={messages}
+                        send={sendTextMessage}
                     />
                 </Stack>
             }
