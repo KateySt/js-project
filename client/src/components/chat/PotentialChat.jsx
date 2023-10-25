@@ -1,7 +1,11 @@
 import {useSelector} from "react-redux";
 import {selectUser} from "../../features/user/UsersSlice.js";
 
-const PotentialChat = ({potentialChat, creatChat}) => {
+const PotentialChat = ({
+                           onlineUsers,
+                           creatChat,
+                           potentialChat
+                       }) => {
     const user = useSelector(selectUser);
     return (
         <>
@@ -13,7 +17,11 @@ const PotentialChat = ({potentialChat, creatChat}) => {
                                  key={index}
                                  onClick={() => creatChat(user._id, u._id)}>
                                 {u.name}
-                                <span className="user-online"></span>
+                                <span className={
+                                    onlineUsers?.some((user) => user?.userId === u._id) ?
+                                        "user-online" :
+                                        ""
+                                }></span>
                             </div>
                         )
                     })

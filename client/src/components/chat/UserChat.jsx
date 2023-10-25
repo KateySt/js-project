@@ -3,8 +3,9 @@ import {Stack} from "react-bootstrap";
 import avatar from "../../assets/undraw_profile_pic_re_iwgo.svg";
 import {useRecipient} from "../../hooks/useRecipient.js";
 
-const UserChat = ({data}) => {
-    const {recipient} = useRecipient(data);
+const UserChat = ({data, onlineUsers}) => {
+    const {recipient, recipientId} = useRecipient(data);
+    const isOnline = onlineUsers?.some((user) => user?.userId === recipientId);
     return (
         <Stack
             direction="horizontal"
@@ -26,7 +27,7 @@ const UserChat = ({data}) => {
                     12/12/2023
                 </div>
                 <div className="this-user-notifications">2</div>
-                <span className="user-online"></span>
+                <span className={isOnline ? "user-online" : ""}></span>
             </div>
         </Stack>
     );

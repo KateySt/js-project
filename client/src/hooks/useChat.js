@@ -2,7 +2,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {useCallback, useEffect, useState} from "react";
 import {createChatAsync, findUserChatsAsync, selectChat, selectChats} from "../features/chat/ChatSlice.js";
 import {findUsersAsync, selectUser, selectUsers} from "../features/user/UsersSlice.js";
-import {createMessageAsync, getMessagesAsync} from "../features/message/MessageSlice.js";
+import {createMessageAsync, getMessagesAsync, selectMessage, updateMessages} from "../features/message/MessageSlice.js";
+import {io} from "socket.io-client";
 
 function useChat() {
     const dispatch = useDispatch();
@@ -14,6 +15,47 @@ function useChat() {
     const [potentialChat, setPotentialChat] = useState();
     const [isMessageLoading, setIsMessageLoading] = useState(false);
     const [currentChat, setCurrentChat] = useState(null);
+    const [socket, setSocket] = useState(null);
+    const [onlineUsers, setOnlineUsers] = useState([]);
+    const message = useSelector(selectMessage);
+
+    useEffect(() => {
+        const newSocket = io("http://localhost:3000");
+        setSocket(newSocket);
+        return () => {
+            newSocket.disconnect();
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (socket == null) return;
+        socket.emit("addNewUser", user?._id);
+        socket.on("getOnlineUsers", (res) => {
+            setOnlineUsers(res);
+        });
+        return () => {
+            socket.off("getOnlineUsers");
+        };
+    }, [socket]);
+
+    useEffect(() => {
+        if (socket == null) return;
+        const recipientId = currentChat?.members.find(id => id !== user._id);
+        socket.emit("sendMessage", {...message, recipientId});
+
+    }, [message]);
+
+    useEffect(() => {
+        if (socket == null) return;
+
+        socket.on("getMessage", (res) => {
+            if (currentChat?._id !== res.chatId) return;
+            dispatch(updateMessages(res));
+        });
+        return () => {
+            socket.off("getMessage");
+        }
+    }, [socket, currentChat]);
 
     const updateCurrentChat = useCallback((chat) => {
         setCurrentChat(chat);
@@ -81,6 +123,7 @@ function useChat() {
         currentChat,
         isMessageLoading,
         sendTextMessage,
+        onlineUsers,
     };
 }
 

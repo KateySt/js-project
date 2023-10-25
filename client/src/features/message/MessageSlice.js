@@ -15,10 +15,13 @@ export const MessagesSlice = createSlice({
         getMessages: (state, action) => {
             state.messages = action.payload;
         },
+        updateMessages: (state, action) => {
+            state.messages = [...state.messages, action.payload];
+        },
     },
 });
 
-export const {createMessage, getMessages} = MessagesSlice.actions;
+export const {createMessage, getMessages,updateMessages} = MessagesSlice.actions;
 
 export const selectMessages = (state) => state.messages.messages;
 export const selectMessage = (state) => state.messages.message;

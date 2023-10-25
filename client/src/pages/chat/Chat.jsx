@@ -11,15 +11,16 @@ const Chat = () => {
         isChatLoading,
         updateCurrentChat,
         currentChat,
-        potentialChat,
-        creatChat,
         isMessageLoading,
         sendTextMessage,
+        onlineUsers,
+        creatChat,
+        potentialChat
     } = useChat();
 
     return (
         <Container>
-            <PotentialChat potentialChat={potentialChat} creatChat={creatChat}/>
+            <PotentialChat creatChat={creatChat} potentialChat={potentialChat} onlineUsers={onlineUsers}/>
             {chatsInfo?.lenght ? null :
                 <Stack direction="horizontal" gap={4} className="align-items-start">
                     <Stack className="messages-box flex-grow-0 pe-3" gap={3}>
@@ -29,7 +30,7 @@ const Chat = () => {
                                     <div key={`row--  ${index}`}
                                          onClick={() => updateCurrentChat(value)}
                                     >
-                                        <UserChat data={value}/>
+                                        <UserChat data={value} onlineUsers={onlineUsers}/>
                                     </div>
                                 )
                             }
