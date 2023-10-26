@@ -17,7 +17,6 @@ const Chat = () => {
         creatChat,
         potentialChat,
         markThisNotificationAsRead,
-        notifications,
     } = useChat();
     return (
         <Container>
@@ -33,7 +32,6 @@ const Chat = () => {
                                     >
                                         <UserChat
                                             data={value}
-                                            notifications={notifications}
                                             markThisNotificationAsRead={markThisNotificationAsRead}
                                             onlineUsers={onlineUsers}
                                         />

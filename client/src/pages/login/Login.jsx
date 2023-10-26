@@ -1,8 +1,8 @@
 import React from 'react';
 import {Button, Col, Form, Row, Stack} from "react-bootstrap";
-import {LoginSchema, SignupSchema} from "../register/schema/SignupSchema.js";
 import {Field, Formik} from "formik";
 import useUser from "../../hooks/useUser.js";
+import {LoginSchema} from "./schema/SignupSchema.js";
 
 const Login = () => {
 

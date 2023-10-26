@@ -38,7 +38,7 @@ const ChatBox = ({data, isLoading, send}) => {
                     messages.map((message, index) => {
                         return (
                             <Stack key={index}
-                                   className={message?.senderId !== user?._id ?
+                                   className={message?.senderId === user?._id ?
                                        "message self align-self-end flex-grow-0" :
                                        "message align-self-start flex-grow-0"
                                    }
@@ -59,7 +59,7 @@ const ChatBox = ({data, isLoading, send}) => {
                     fontFamily="nunito"
                     borderColor="rgba(72,112,223,0.2)"
                 />
-                <button className="send-btn" onClick={() => send(textMessage, recipient, data._id, setTextMessage)}>
+                <button className="send-btn" onClick={() => send(textMessage, user, data._id, setTextMessage)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                          className="bi bi-send-fill" viewBox="0 0 16 16">
                         <path

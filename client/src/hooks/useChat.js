@@ -2,7 +2,14 @@ import {useDispatch, useSelector} from "react-redux";
 import {useCallback, useEffect, useState} from "react";
 import {createChatAsync, findUserChatsAsync, selectChat, selectChats} from "../features/chat/ChatSlice.js";
 import {findUsersAsync, selectUser, selectUsers} from "../features/user/UsersSlice.js";
-import {createMessageAsync, getMessagesAsync, selectMessage, updateMessages} from "../features/message/MessageSlice.js";
+import {
+    createMessageAsync,
+    getMessagesAsync,
+    getNotification, getNotifications,
+    selectMessage,
+    selectNotifications,
+    updateMessages
+} from "../features/message/MessageSlice.js";
 import {io} from "socket.io-client";
 
 function useChat() {
@@ -18,7 +25,7 @@ function useChat() {
     const [socket, setSocket] = useState(null);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const message = useSelector(selectMessage);
-    const [notifications, setNotifications] = useState([]);
+    const notifications = useSelector(selectNotifications);
 
     useEffect(() => {
         const newSocket = io("http://localhost:3000");
@@ -41,24 +48,22 @@ function useChat() {
 
     useEffect(() => {
         if (socket == null) return;
-        const recipientId = currentChat?.members.find(id => id !== user._id);
+        const recipientId = currentChat?.members.find(id => id !== user?._id);
         socket.emit("sendMessage", {...message, recipientId});
-
     }, [message]);
 
     useEffect(() => {
         if (socket == null) return;
-
         socket.on("getMessage", (res) => {
             if (currentChat?._id !== res.chatId) return;
             dispatch(updateMessages(res));
         });
         socket.on("getNotification", (res) => {
-            const isChatOpen = currentChat?.members.some(id => id === res.secondId);
+            const isChatOpen = currentChat?.members.some(id => id === res.senderId);
             if (isChatOpen) {
-                setNotifications(prev => [{...res, isRead: true}, ...prev]);
+                dispatch(getNotifications({...res, isRead: true}))
             } else {
-                setNotifications(prev => [res, ...prev]);
+                dispatch(getNotifications(res))
             }
         });
         return () => {
@@ -95,7 +100,7 @@ function useChat() {
             dispatch(getMessagesAsync(currentChat?._id));
             setIsMessageLoading(false);
         }
-    }, [user]);
+    }, [currentChat]);
 
     useEffect(() => {
         if (user) {
@@ -126,12 +131,12 @@ function useChat() {
         const mNotification = notification.map(n => {
             return [{...n, isRead: true}]
         });
-        setNotifications(mNotification);
+        dispatch(getNotification(mNotification));
     }, []);
 
     const markNotificationAsRead = useCallback((n, userChats, user, notification) => {
         const desiredChat = userChats.find(chat => {
-            const chatMembers = [user._id, n.secondId];
+            const chatMembers = [user._id, n.senderId];
             return chat?.members.every((member) => {
                 return chatMembers.includes(member);
             });
@@ -140,7 +145,7 @@ function useChat() {
             return n.senderId === el.senderId ? {...n, isRead: true} : el;
         });
         updateCurrentChat(desiredChat);
-        setNotifications(mNotifications);
+        dispatch(getNotification(mNotifications));
     }, []);
 
     const markThisNotificationAsRead = useCallback((thisUserNotification, notifications) => {
@@ -155,7 +160,7 @@ function useChat() {
             });
             return notification;
         });
-        setNotifications(mNotification);
+        dispatch(getNotification(mNotification));
     }, []);
 
     return {
@@ -170,7 +175,6 @@ function useChat() {
         isMessageLoading,
         sendTextMessage,
         onlineUsers,
-        notifications,
         users,
         markAllNotificationAsRead,
         markNotificationAsRead,

@@ -5,13 +5,19 @@ import {useRecipient} from "../../hooks/useRecipient.js";
 import {unreadNotificationsFun} from "../../utils/unreadNotifications.js";
 import {useLatestMessage} from "../../hooks/useLatestMessage.js";
 import moment from "moment";
+import {useSelector} from "react-redux";
+import {selectNotifications} from "../../features/message/MessageSlice.js";
 
-const UserChat = ({data, onlineUsers, notifications, markThisNotificationAsRead,}) => {
-    const {recipient, recipientId} = useRecipient(data);
+const UserChat = ({data, onlineUsers, markThisNotificationAsRead}) => {
+    const {recipient} = useRecipient(data);
+    const notifications = useSelector(selectNotifications);
     const unreadNotifications = unreadNotificationsFun(notifications);
-    const {latestMessage} = useLatestMessage(data, notifications);
-    const thisUserNotifications = unreadNotifications?.filter(n => n.senderId === recipient?._id);
-    const isOnline = onlineUsers?.some((user) => user?.userId === recipientId);
+    const {latestMessage} = useLatestMessage(data);
+    const thisUserNotifications = unreadNotifications?.filter(n => {
+        return n.senderId === recipient?._id
+    });
+    const isOnline = onlineUsers?.some((user) => user?.userId === recipient?._id);
+
     const truncateText = (text) => {
         let shortText = text.substring(0, 20);
         if (text.length > 20) {

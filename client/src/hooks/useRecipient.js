@@ -19,7 +19,6 @@ export const useRecipient = (chat) => {
         }
     }, [recipientId]);
     return {
-        recipient,
-        recipientId,
+        recipient
     };
 }

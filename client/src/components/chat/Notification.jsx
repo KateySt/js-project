@@ -2,10 +2,13 @@ import React, {useState} from 'react';
 import useChat from "../../hooks/useChat.js";
 import {unreadNotificationsFun} from "../../utils/unreadNotifications.js";
 import moment from "moment";
+import {useSelector} from "react-redux";
+import {selectNotifications} from "../../features/message/MessageSlice.js";
 
 const Notification = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const {notifications, chatsInfo, users, user, markAllNotificationAsRead, markNotificationAsRead} = useChat();
+    const {chatsInfo, users, user, markAllNotificationAsRead, markNotificationAsRead} = useChat();
+    const notifications = useSelector(selectNotifications);
     const unreadNotifications = unreadNotificationsFun(notifications);
     const modifiedNotifications = notifications.map(n => {
         const sender = users.find(user => user._id === n.senderId);

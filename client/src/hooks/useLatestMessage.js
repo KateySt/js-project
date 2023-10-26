@@ -1,11 +1,12 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {useSelector} from "react-redux";
-import {selectMessages} from "../features/message/MessageSlice.js";
+import {selectMessages, selectNotifications} from "../features/message/MessageSlice.js";
 
-export const useLatestMessage = (chat, notifications) => {
+export const useLatestMessage = (chat) => {
     const [latestMessage, setLatestMessage] = useState(null);
     const messages = useSelector(selectMessages);
+    const notifications = useSelector(selectNotifications);
 
     useEffect(() => {
         axios({
