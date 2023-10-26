@@ -15,9 +15,10 @@ const Chat = () => {
         sendTextMessage,
         onlineUsers,
         creatChat,
-        potentialChat
+        potentialChat,
+        markThisNotificationAsRead,
+        notifications,
     } = useChat();
-
     return (
         <Container>
             <PotentialChat creatChat={creatChat} potentialChat={potentialChat} onlineUsers={onlineUsers}/>
@@ -30,7 +31,12 @@ const Chat = () => {
                                     <div key={`row--  ${index}`}
                                          onClick={() => updateCurrentChat(value)}
                                     >
-                                        <UserChat data={value} onlineUsers={onlineUsers}/>
+                                        <UserChat
+                                            data={value}
+                                            notifications={notifications}
+                                            markThisNotificationAsRead={markThisNotificationAsRead}
+                                            onlineUsers={onlineUsers}
+                                        />
                                     </div>
                                 )
                             }

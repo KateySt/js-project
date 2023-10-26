@@ -18,6 +18,7 @@ function useChat() {
     const [socket, setSocket] = useState(null);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const message = useSelector(selectMessage);
+    const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
         const newSocket = io("http://localhost:3000");
@@ -52,8 +53,17 @@ function useChat() {
             if (currentChat?._id !== res.chatId) return;
             dispatch(updateMessages(res));
         });
+        socket.on("getNotification", (res) => {
+            const isChatOpen = currentChat?.members.some(id => id === res.secondId);
+            if (isChatOpen) {
+                setNotifications(prev => [{...res, isRead: true}, ...prev]);
+            } else {
+                setNotifications(prev => [res, ...prev]);
+            }
+        });
         return () => {
             socket.off("getMessage");
+            socket.off("getNotification");
         }
     }, [socket, currentChat]);
 
@@ -77,7 +87,7 @@ function useChat() {
             dispatch(findUserChatsAsync(user._id));
             setIsChatLoading(false);
         }
-    }, [user]);
+    }, [user, notifications]);
 
     useEffect(() => {
         if (currentChat) {
@@ -85,7 +95,7 @@ function useChat() {
             dispatch(getMessagesAsync(currentChat?._id));
             setIsMessageLoading(false);
         }
-    }, [currentChat]);
+    }, [user]);
 
     useEffect(() => {
         if (user) {
@@ -112,6 +122,42 @@ function useChat() {
         }));
     }, []);
 
+    const markAllNotificationAsRead = useCallback((notification) => {
+        const mNotification = notification.map(n => {
+            return [{...n, isRead: true}]
+        });
+        setNotifications(mNotification);
+    }, []);
+
+    const markNotificationAsRead = useCallback((n, userChats, user, notification) => {
+        const desiredChat = userChats.find(chat => {
+            const chatMembers = [user._id, n.secondId];
+            return chat?.members.every((member) => {
+                return chatMembers.includes(member);
+            });
+        });
+        const mNotifications = notification.map(el => {
+            return n.senderId === el.senderId ? {...n, isRead: true} : el;
+        });
+        updateCurrentChat(desiredChat);
+        setNotifications(mNotifications);
+    }, []);
+
+    const markThisNotificationAsRead = useCallback((thisUserNotification, notifications) => {
+        const mNotification = notifications.map(el => {
+            let notification;
+            thisUserNotification.forEach(n => {
+                if (n.senderId === el.senderId) {
+                    notification = {...n, isRead: true};
+                } else {
+                    notification = el;
+                }
+            });
+            return notification;
+        });
+        setNotifications(mNotification);
+    }, []);
+
     return {
         chatInfo,
         chatsInfo,
@@ -124,6 +170,11 @@ function useChat() {
         isMessageLoading,
         sendTextMessage,
         onlineUsers,
+        notifications,
+        users,
+        markAllNotificationAsRead,
+        markNotificationAsRead,
+        markThisNotificationAsRead,
     };
 }
 

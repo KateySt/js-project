@@ -2,9 +2,10 @@ import React from 'react';
 import {Container, Nav, Navbar, Stack} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import useUser from "../hooks/useUser.js";
+import Notification from "./chat/Notification.jsx";
 
 const NavBar = () => {
-    const {userInfo,logout} = useUser();
+    const {userInfo, logout} = useUser();
     return (
         <>
             <Navbar bg="dark" className="mb-4" style={{height: "3.75rem"}}>
@@ -21,6 +22,7 @@ const NavBar = () => {
                         <Stack direction="horizontal" gap={3}>
 
                             {userInfo && <>
+                                <Notification/>
                                 <Link
                                     onClick={logout}
                                     to="/login"

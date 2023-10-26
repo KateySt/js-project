@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useRecipient} from "../../hooks/useRecipient.js";
 import {useSelector} from "react-redux";
 import {selectUser} from "../../features/user/UsersSlice.js";
@@ -12,6 +12,13 @@ const ChatBox = ({data, isLoading, send}) => {
     const {recipient} = useRecipient(data);
     const [textMessage, setTextMessage] = useState();
     const messages = useSelector(selectMessages);
+    const scroll = useRef();
+
+    useEffect(() => {
+        scroll.current?.scrollIntoView({
+            behavior: "smooth"
+        });
+    }, [messages]);
 
     if (!recipient) {
         return (<p style={{textAlign: "center", width: "100%"}}>No composition selected yet...</p>)
@@ -34,7 +41,9 @@ const ChatBox = ({data, isLoading, send}) => {
                                    className={message?.senderId !== user?._id ?
                                        "message self align-self-end flex-grow-0" :
                                        "message align-self-start flex-grow-0"
-                                   }>
+                                   }
+                                   ref={scroll}
+                            >
                                 <span>{message.text}</span>
                                 <span className="message-footer">
                                     {moment(message.createdAt).calendar()}
