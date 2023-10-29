@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
 import useChat from "../../hooks/useChat.js";
 import {unreadNotificationsFun} from "../../utils/unreadNotifications.js";
 import moment from "moment";
 import {useSelector} from "react-redux";
 import {selectNotifications} from "../../features/message/MessageSlice.js";
+import {useState} from "react";
 
 const Notification = () => {
     const [isOpen, setIsOpen] = useState(false);

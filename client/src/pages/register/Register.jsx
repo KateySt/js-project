@@ -1,11 +1,9 @@
-import React from 'react';
 import {Button, Col, Form, Row, Stack} from "react-bootstrap";
 import useUser from "../../hooks/useUser.js";
 import {Field, Formik} from "formik";
 import {SignupSchema} from "./schema/SignupSchema.js";
 
 const Register = () => {
-
     const {
         register,
         isLoading

@@ -1,8 +1,7 @@
-import React from 'react';
 import {Container, Nav, Navbar, Stack} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import useUser from "../hooks/useUser.js";
-import Notification from "./chat/Notification.jsx";
+import useUser from "../../hooks/useUser.js";
+import Notification from "../notification/Notification.jsx";
 
 const NavBar = () => {
     const {userInfo, logout} = useUser();

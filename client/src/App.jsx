@@ -4,11 +4,25 @@ import Login from "./pages/login/Login.jsx";
 import Register from "./pages/register/Register.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {Container} from "react-bootstrap";
-import NavBar from "./components/NavBar.jsx";
-import {useSelector} from "react-redux";
-import {selectUser} from "./features/user/UsersSlice.js";
+import NavBar from "./components/navbar/NavBar.jsx";
+import {useDispatch, useSelector} from "react-redux";
+import {selectUser} from "./features/user/UserSlice.js";
+import {useEffect} from "react";
+import {io} from "socket.io-client";
+import {setSocket} from "./features/socket/SocketSlice.js";
+import {URL_WS} from "./main.jsx";
 
 function App() {
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        const newSocket = io(URL_WS);
+        dispatch(setSocket(newSocket));
+        return () => {
+            newSocket.disconnect();
+        }
+    }, []);
+
     const userInfo = useSelector(selectUser);
     return (
         <>

@@ -1,24 +1,25 @@
 import {useSelector} from "react-redux";
-import {selectUser} from "../features/user/UsersSlice.js";
+import {selectUser} from "../features/user/UserSlice.js";
 import {useEffect, useState} from "react";
-import axios from "axios";
+import {selectSocket} from "../features/socket/SocketSlice.js";
 
-export const useRecipient = (chat) => {
+export const useRecipient = () => {
     const user = useSelector(selectUser);
-    const recipientId = chat?.members.find(id => id !== user._id);
-    const [recipient, setRecipient] = useState(null);
+    const [recipients, setRecipients] = useState(null);
+    const socket = useSelector(selectSocket);
 
     useEffect(() => {
-        if (recipientId) {
-            axios({
-                method: 'get',
-                url: `users/find/${recipientId}`,
-            })
-                .then((user) => (setRecipient(user.data)))
-                .catch((err) => console.log(err));
-        }
-    }, [recipientId]);
+        if (socket == null) return;
+        if (user == null) return;
+        socket.emit("findRecipient", user?._id);
+        socket.on("getRecipient", (user) => {
+            setRecipients(user);
+        });
+        return () => {
+            socket.off("getUser");
+        };
+    }, [user]);
     return {
-        recipient
+        recipients
     };
 }

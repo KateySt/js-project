@@ -1,16 +1,17 @@
-import {useDispatch, useSelector} from "react-redux";
 import {useCallback, useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {findUsersAsync, selectUser, selectUsers} from "../features/user/UserSlice.js";
 import {createChatAsync, findUserChatsAsync, selectChat, selectChats} from "../features/chat/ChatSlice.js";
-import {findUsersAsync, selectUser, selectUsers} from "../features/user/UsersSlice.js";
 import {
     createMessageAsync,
     getMessagesAsync,
-    getNotification, getNotifications,
+    getNotification,
+    getNotifications,
     selectMessage,
     selectNotifications,
     updateMessages
 } from "../features/message/MessageSlice.js";
-import {io} from "socket.io-client";
+import {selectSocket} from "../features/socket/SocketSlice.js";
 
 function useChat() {
     const dispatch = useDispatch();
@@ -19,21 +20,13 @@ function useChat() {
     const chatsInfo = useSelector(selectChats);
     const user = useSelector(selectUser);
     const users = useSelector(selectUsers);
+    const socket = useSelector(selectSocket);
     const [potentialChat, setPotentialChat] = useState();
     const [isMessageLoading, setIsMessageLoading] = useState(false);
     const [currentChat, setCurrentChat] = useState(null);
-    const [socket, setSocket] = useState(null);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const message = useSelector(selectMessage);
     const notifications = useSelector(selectNotifications);
-
-    useEffect(() => {
-        const newSocket = io("http://localhost:3000");
-        setSocket(newSocket);
-        return () => {
-            newSocket.disconnect();
-        }
-    }, [user]);
 
     useEffect(() => {
         if (socket == null) return;
@@ -70,10 +63,10 @@ function useChat() {
             socket.off("getMessage");
             socket.off("getNotification");
         }
-    }, [socket, currentChat]);
+    }, [currentChat]);
 
     const updateCurrentChat = useCallback((chat) => {
-        setCurrentChat(chat);
+        setCurrentChat(chat.chat);
     }, []);
 
     const sendTextMessage = useCallback(async (textMessage, sender, currentChatId, setTextMessage) => {
@@ -82,50 +75,47 @@ function useChat() {
             chatId: currentChatId,
             senderId: sender._id,
             text: textMessage,
-        }));
+        }, socket));
         setTextMessage("");
     }, []);
 
     useEffect(() => {
-        if (user) {
-            setIsChatLoading(true);
-            dispatch(findUserChatsAsync(user._id));
-            setIsChatLoading(false);
-        }
+        if (user == null) return;
+        setIsChatLoading(true);
+        dispatch(findUserChatsAsync(user._id, socket));
+        setIsChatLoading(false);
     }, [user, notifications]);
 
     useEffect(() => {
-        if (currentChat) {
-            setIsMessageLoading(true);
-            dispatch(getMessagesAsync(currentChat?._id));
-            setIsMessageLoading(false);
-        }
+        if (currentChat == null) return;
+        setIsMessageLoading(true);
+        dispatch(getMessagesAsync(currentChat?._id, socket));
+        setIsMessageLoading(false);
     }, [currentChat]);
 
     useEffect(() => {
-        if (user) {
-            dispatch(findUsersAsync());
-            const pChats = users.filter((u) => {
-                let isChatCreated = false;
-                if (user._id === u._id) return false;
-                if (chatsInfo) {
-                    isChatCreated = chatsInfo?.some(chat => {
-                        return chat.members[0] === u._id ||
-                            chat.members[1] === u._id;
-                    })
-                }
-                return !isChatCreated;
-            });
-            setPotentialChat(pChats);
-        }
+        if (user == null) return;
+        dispatch(findUsersAsync(socket));
+        const pChats = users.filter((u) => {
+            let isChatCreated = false;
+            if (user._id === u._id) return false;
+            if (chatsInfo) {
+                isChatCreated = chatsInfo?.some(chat => {
+                    return chat.members[0] === u._id ||
+                        chat.members[1] === u._id;
+                })
+            }
+            return !isChatCreated;
+        });
+        setPotentialChat(pChats);
     }, [chatsInfo]);
 
     const creatChat = useCallback(async (firstId, secondId) => {
         await dispatch(createChatAsync({
             firstId: firstId,
             secondId: secondId
-        }));
-    }, []);
+        }, socket));
+    }, [socket]);
 
     const markAllNotificationAsRead = useCallback((notification) => {
         const mNotification = notification.map(n => {

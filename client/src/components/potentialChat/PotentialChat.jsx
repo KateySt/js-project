@@ -1,5 +1,5 @@
 import {useSelector} from "react-redux";
-import {selectUser} from "../../features/user/UsersSlice.js";
+import {selectUser} from "../../features/user/UserSlice.js";
 
 const PotentialChat = ({
                            onlineUsers,
