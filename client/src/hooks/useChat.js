@@ -91,7 +91,7 @@ function useChat() {
         setIsMessageLoading(true);
         dispatch(getMessagesAsync(currentChat?._id, socket));
         setIsMessageLoading(false);
-    }, [currentChat]);
+    }, [currentChat,message]);
 
     useEffect(() => {
         if (user == null) return;

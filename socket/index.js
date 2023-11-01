@@ -53,12 +53,11 @@ io.on("connection", (socket) => {
 
         const token = createToken(user._id);
 
-        io.emit("getToken", token);
+        io.to(socket.id).emit("getToken", token);
     });
 
 //login
     socket.on("login", async (userInfo) => {
-
         const {email, password} = userInfo;
 
         if (!email || !password)
@@ -76,39 +75,19 @@ io.on("connection", (socket) => {
 
         const token = createToken(user._id);
 
-        io.emit("getToken", token);
+        io.to(socket.id).emit("getToken", token);
     });
 //find user one
     socket.on("find", async (userId) => {
         const user = await userModel.findById(userId);
 
-        io.emit("getUser", user);
+        io.to(socket.id).emit("getUser", user);
     });
 //find all users
     socket.on("findAll", async () => {
         const users = await userModel.find();
 
-        io.emit("getUsers", users);
-    });
-    //--------------message------------
-
-//creat message
-    socket.on("creatMessage", async (chat) => {
-        const {chatId, senderId, text} = chat;
-        const message = new messageModel({
-            chatId,
-            senderId,
-            text,
-        });
-
-        const response = await message.save();
-        io.emit("getCreatedMessage", response);
-    });
-
-//get message
-    socket.on("getMessages", async (chatId) => {
-        const messages = await messageModel.find({chatId});
-        io.emit("getMessagesById", messages);
+        io.to(socket.id).emit("getUsers", users);
     });
 
     //--------------chat------------
@@ -124,18 +103,20 @@ io.on("connection", (socket) => {
 
         const response = await newChat.save();
 
-        io.emit("getChat", response);
+        io.to(socket.id).emit("getChat", response);
     });
 
     //find User Chats
     socket.on("findUserChats", async (userId) => {
         const chats = await chatModel.find({members: {$in: [userId]}});
-        io.emit("getUserChats", chats);
+
+        io.to(socket.id).emit("getUserChats", chats);
     });
 
     //find recipient
     socket.on("findRecipient", async (userId) => {
         const chats = await chatModel.find({members: {$in: [userId]}});
+
         let result = [];
         for (const chatsKey in chats) {
             const chat = chats[chatsKey];
@@ -149,13 +130,14 @@ io.on("connection", (socket) => {
                 .exec();
             const updatedUser = {
                 chat,
+                _id: user._id,
                 name: user.name,
                 email: user.email,
                 message: lastMessage,
             };
             result = [...result, updatedUser];
         }
-        io.emit("getRecipient", result);
+        io.to(socket.id).emit("getRecipient", result);
     });
 
     //find Chat
@@ -163,8 +145,31 @@ io.on("connection", (socket) => {
         const {firstId, secondId} = chatInfo;
         const chat = await chatModel.findOne({members: {$all: [firstId, secondId]}});
 
-        io.emit("getFindChat", chat);
+        io.to(socket.id).emit("getFindChat", chat);
     });
+
+    //--------------message------------
+
+//creat message
+    socket.on("creatMessage", async (chat) => {
+        const {chatId, senderId, text} = chat;
+        const message = new messageModel({
+            chatId,
+            senderId,
+            text,
+        });
+
+        const response = await message.save();
+        io.to(socket.id).emit("getCreatedMessage", response);
+    });
+
+//get message
+    socket.on("getMessages", async (chatId) => {
+        const messages = await messageModel.find({chatId});
+
+        io.to(socket.id).emit("getMessagesById", messages);
+    });
+
 //---------------------
 //online user
     socket.on("addNewUser", (userId) => {
@@ -175,17 +180,16 @@ io.on("connection", (socket) => {
         });
         io.emit("getOnlineUsers", onlineUsers);
     });
-    // message
+    // Notification
     socket.on("sendMessage", (message) => {
         const user = onlineUsers.find(user => user.userId === message.recipientId);
-        if (user) {
-            io.to(user.socketId).emit("getMessage", message);
-            io.to(user.socketId).emit("getNotification", {
-                senderId: message.senderId,
-                isRead: false,
-                date: new Date(),
-            });
-        }
+        if (!user) return;
+        io.to(user.socketId).emit("getMessage", message);
+        io.to(user.socketId).emit("getNotification", {
+            senderId: message.senderId,
+            isRead: false,
+            date: new Date(),
+        });
     });
 
     socket.on("disconnect", () => {

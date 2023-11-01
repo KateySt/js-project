@@ -12,7 +12,6 @@ const UserChat = ({data, onlineUsers, markThisNotificationAsRead}) => {
         return n.senderId === data?._id
     });
     const isOnline = onlineUsers?.some((user) => user?.userId === data?._id);
-
     const truncateText = (text) => {
         let shortText = text.substring(0, 20);
         if (text.length > 20) {

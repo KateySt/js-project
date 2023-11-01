@@ -10,7 +10,6 @@ export const MessagesSlice = createSlice({
     reducers: {
         createMessage: (state, action) => {
             state.message = action.payload;
-            state.messages = [...state.messages, action.payload];
         },
         getMessages: (state, action) => {
             state.messages = action.payload;
