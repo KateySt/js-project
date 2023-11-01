@@ -9,12 +9,13 @@ import {useDispatch, useSelector} from "react-redux";
 import {selectUser} from "./features/user/UserSlice.js";
 import {useEffect} from "react";
 import {io} from "socket.io-client";
-import {setSocket} from "./features/socket/SocketSlice.js";
-import {URL_WS} from "./main.jsx";
+import {setSocket, setWSS} from "./features/socket/SocketSlice.js";
+import {URL_WS, URL_WSS} from "./main.jsx";
 
 function App() {
-
     const dispatch = useDispatch();
+    const userInfo = useSelector(selectUser);
+
     useEffect(() => {
         const newSocket = io(URL_WS);
         dispatch(setSocket(newSocket));
@@ -23,7 +24,17 @@ function App() {
         }
     }, []);
 
-    const userInfo = useSelector(selectUser);
+    useEffect(() => {
+        const newSocket = io(URL_WSS, {
+            auth:
+                {token: JSON.parse(localStorage.getItem("jwt"))}
+        });
+        dispatch(setWSS(newSocket));
+        return () => {
+            newSocket.disconnect();
+        }
+    }, []);
+
     return (
         <>
             <NavBar/>

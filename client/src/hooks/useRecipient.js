@@ -1,24 +1,25 @@
 import {useSelector} from "react-redux";
 import {selectUser} from "../features/user/UserSlice.js";
 import {useEffect, useState} from "react";
-import {selectSocket} from "../features/socket/SocketSlice.js";
+import {selectWSS} from "../features/socket/SocketSlice.js";
 
 export const useRecipient = () => {
     const user = useSelector(selectUser);
     const [recipients, setRecipients] = useState(null);
-    const socket = useSelector(selectSocket);
+    const wss = useSelector(selectWSS);
 
     useEffect(() => {
-        if (socket == null) return;
+        if (wss == null) return;
         if (user == null) return;
-        socket.emit("findRecipient", user?._id);
-        socket.on("getRecipient", (user) => {
+        wss.emit("findRecipient", user?._id);
+        wss.on("getRecipient", (user) => {
             setRecipients(user);
         });
         return () => {
-            socket.off("getUser");
+            wss.off("getUser");
         };
     }, [user]);
+
     return {
         recipients
     };

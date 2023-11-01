@@ -11,7 +11,7 @@ import {
     selectNotifications,
     updateMessages
 } from "../features/message/MessageSlice.js";
-import {selectSocket} from "../features/socket/SocketSlice.js";
+import {selectWSS} from "../features/socket/SocketSlice.js";
 
 function useChat() {
     const dispatch = useDispatch();
@@ -20,7 +20,7 @@ function useChat() {
     const chatsInfo = useSelector(selectChats);
     const user = useSelector(selectUser);
     const users = useSelector(selectUsers);
-    const socket = useSelector(selectSocket);
+    const wss = useSelector(selectWSS);
     const [potentialChat, setPotentialChat] = useState();
     const [isMessageLoading, setIsMessageLoading] = useState(false);
     const [currentChat, setCurrentChat] = useState(null);
@@ -29,29 +29,29 @@ function useChat() {
     const notifications = useSelector(selectNotifications);
 
     useEffect(() => {
-        if (socket == null) return;
-        socket.emit("addNewUser", user?._id);
-        socket.on("getOnlineUsers", (res) => {
+        if (wss == null) return;
+        wss.emit("addNewUser", user?._id);
+        wss.on("getOnlineUsers", (res) => {
             setOnlineUsers(res);
         });
         return () => {
-            socket.off("getOnlineUsers");
+            wss.off("getOnlineUsers");
         };
-    }, [socket]);
+    }, [wss]);
 
     useEffect(() => {
-        if (socket == null) return;
+        if (wss == null) return;
         const recipientId = currentChat?.members.find(id => id !== user?._id);
-        socket.emit("sendMessage", {...message, recipientId});
+        wss.emit("sendMessage", {...message, recipientId});
     }, [message]);
 
     useEffect(() => {
-        if (socket == null) return;
-        socket.on("getMessage", (res) => {
+        if (wss == null) return;
+        wss.on("getMessage", (res) => {
             if (currentChat?._id !== res.chatId) return;
             dispatch(updateMessages(res));
         });
-        socket.on("getNotification", (res) => {
+        wss.on("getNotification", (res) => {
             const isChatOpen = currentChat?.members.some(id => id === res.senderId);
             if (isChatOpen) {
                 dispatch(getNotifications({...res, isRead: true}))
@@ -60,8 +60,8 @@ function useChat() {
             }
         });
         return () => {
-            socket.off("getMessage");
-            socket.off("getNotification");
+            wss.off("getMessage");
+            wss.off("getNotification");
         }
     }, [currentChat]);
 
@@ -75,27 +75,27 @@ function useChat() {
             chatId: currentChatId,
             senderId: sender._id,
             text: textMessage,
-        }, socket));
+        }, wss));
         setTextMessage("");
     }, []);
 
     useEffect(() => {
         if (user == null) return;
         setIsChatLoading(true);
-        dispatch(findUserChatsAsync(user._id, socket));
+        dispatch(findUserChatsAsync(user._id, wss));
         setIsChatLoading(false);
     }, [user, notifications]);
 
     useEffect(() => {
         if (currentChat == null) return;
         setIsMessageLoading(true);
-        dispatch(getMessagesAsync(currentChat?._id, socket));
+        dispatch(getMessagesAsync(currentChat?._id, wss));
         setIsMessageLoading(false);
-    }, [currentChat,message]);
+    }, [currentChat, message]);
 
     useEffect(() => {
         if (user == null) return;
-        dispatch(findUsersAsync(socket));
+        dispatch(findUsersAsync(wss));
         const pChats = users.filter((u) => {
             let isChatCreated = false;
             if (user._id === u._id) return false;
@@ -114,8 +114,8 @@ function useChat() {
         await dispatch(createChatAsync({
             firstId: firstId,
             secondId: secondId
-        }, socket));
-    }, [socket]);
+        }, wss));
+    }, [wss]);
 
     const markAllNotificationAsRead = useCallback((notification) => {
         const mNotification = notification.map(n => {

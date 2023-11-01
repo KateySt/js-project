@@ -35,10 +35,10 @@ function useUser() {
 
     useEffect(() => {
         if (socket == null) return;
-        if (token && !userInfo) {
-            localStorage.setItem("jwt", JSON.stringify(token));
+        if (!token) return;
+        localStorage.setItem("jwt", JSON.stringify(token));
+        if (!userInfo)
             dispatch(setUserAsync(jwt(token)._id, socket));
-        }
         return () => {
             socket.off("getUser");
         };

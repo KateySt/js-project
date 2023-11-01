@@ -38,7 +38,6 @@ export const {
 export const selectJwt = (state) => state.users.jwt;
 export const selectUser = (state) => state.users.user;
 export const selectUsers = (state) => state.users.users;
-export const selectRecipients = (state) => state.users.recipients;
 export const registerUserAsync = (element, socket) => (dispatch) => {
     if (socket == null) return;
     socket.emit("register", element);
