@@ -3,22 +3,21 @@ import {Container, Stack} from "react-bootstrap";
 import UserChat from "../../components/userChat/UserChat.jsx";
 import PotentialChat from "../../components/potentialChat/PotentialChat.jsx";
 import ChatBox from "../../components/chatbox/ChatBox.jsx";
-import {useRecipient} from "../../hooks/useRecipient.js";
+import {useSelector} from "react-redux";
+import {selectRecipients} from "../../features/user/UserSlice.js";
 
 const Chat = () => {
     const {
         chatsInfo,
-        isChatLoading,
         updateCurrentChat,
         currentChat,
-        isMessageLoading,
         sendTextMessage,
         onlineUsers,
         creatChat,
         potentialChat,
         markThisNotificationAsRead,
     } = useChat();
-    const {recipients} = useRecipient();
+    const recipients = useSelector(selectRecipients);
     return (
         <Container>
             <PotentialChat creatChat={creatChat} potentialChat={potentialChat}
@@ -26,7 +25,6 @@ const Chat = () => {
             {chatsInfo?.lenght ? null :
                 <Stack direction="horizontal" gap={4} className="align-items-start">
                     <Stack className="messages-box flex-grow-0 pe-3" gap={3}>
-                        {isChatLoading && <p>Loading chat ...</p>}
                         {recipients?.map((value, index) => {
                                 return (
                                     <div key={`row--  ${index}`}
@@ -44,7 +42,6 @@ const Chat = () => {
                     </Stack>
                     <ChatBox
                         data={currentChat}
-                        isLoading={isMessageLoading}
                         send={sendTextMessage}
                     />
                 </Stack>

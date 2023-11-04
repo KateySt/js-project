@@ -13,20 +13,20 @@ require("dotenv").config();
 
 const PORT = process.env.PORT || 3000;
 const URI = process.env.ATLAS_URI;
+const JWT_KEY = process.env.JWT_SECRET_KEY;
 
 const userIo = io.of("/users");
 
 let onlineUsers = [];
-
-const JWT_KEY = process.env.JWT_SECRET_KEY;
 const createToken = (_id) => {
     return jwt.sign({_id}, JWT_KEY, {expiresIn: "3d"});
 }
-userIo.use((socket, next) => {
+userIo.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
     if (token) {
         const decoded = jwt.verify(token, JWT_KEY);
-        console.log(decoded);
+        const user = await userModel.findById(decoded?._id);
+        if (!user) next(new Error("403 unauthorized\n do not find this user"));
         next();
     } else {
         next(new Error("403 unauthorized"));
@@ -62,17 +62,15 @@ userIo.on("connection", (socket) => {
             const recipientId = chat?.members.find(id => id !== userId);
             const user = await userModel.findById(recipientId);
             const chatId = chat?._id;
-            const lastMessage = await messageModel
+            const message = await messageModel
                 .find({chatId})
                 .sort({createdAt: -1})
                 .limit(1)
                 .exec();
             const updatedUser = {
                 chat,
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                message: lastMessage,
+                user,
+                message,
             };
             result = [...result, updatedUser];
         }

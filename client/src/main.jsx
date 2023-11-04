@@ -6,8 +6,6 @@ import {BrowserRouter} from "react-router-dom";
 import {Provider} from "react-redux";
 import store from './storege/store';
 
-export const URL_WS = "http://localhost:3000";
-export const URL_WSS = "http://localhost:3000/users";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

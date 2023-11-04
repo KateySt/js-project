@@ -4,11 +4,11 @@ export const MessagesSlice = createSlice({
     name: 'messages',
     initialState: {
         messages: [],
-        message: {},
+        message: null,
         notifications: [],
     },
     reducers: {
-        createMessage: (state, action) => {
+        setMessage: (state, action) => {
             state.message = action.payload;
         },
         getMessages: (state, action) => {
@@ -27,7 +27,7 @@ export const MessagesSlice = createSlice({
 });
 
 export const {
-    createMessage,
+    setMessage,
     getNotification,
     getNotifications,
     getMessages,
@@ -37,19 +37,4 @@ export const {
 export const selectMessages = (state) => state.messages.messages;
 export const selectMessage = (state) => state.messages.message;
 export const selectNotifications = (state) => state.messages.notifications;
-export const createMessageAsync = (element, socket) => (dispatch) => {
-    if (socket == null) return;
-    socket.emit("creatMessage", element);
-    socket.on("getCreatedMessage", (user) => {
-        dispatch(createMessage(user));
-    });
-}
-
-export const getMessagesAsync = (element, socket) => (dispatch) => {
-    if (socket == null) return;
-    socket.emit("getMessages", element);
-    socket.on("getMessagesById", (user) => {
-        dispatch(getMessages(user));
-    });
-}
 export default MessagesSlice.reducer;

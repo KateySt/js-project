@@ -58,10 +58,3 @@ const Login = () => {
 }
 
 export default Login;
-/*
- <Alert variant="danger">
-                                <p>
-                                    An error occurred
-                                </p>
-                            </Alert>
- */

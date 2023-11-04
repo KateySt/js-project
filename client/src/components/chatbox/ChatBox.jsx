@@ -1,15 +1,13 @@
 import {useEffect, useRef, useState} from 'react';
-import {useRecipient} from "../../hooks/useRecipient.js";
 import {useSelector} from "react-redux";
-import {selectUser} from "../../features/user/UserSlice.js";
+import {selectRecipient, selectUser} from "../../features/user/UserSlice.js";
 import {Stack} from "react-bootstrap";
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
 import {selectMessages} from "../../features/message/MessageSlice.js";
 
-const ChatBox = ({data, isLoading, send}) => {
+const ChatBox = ({data, send}) => {
     const user = useSelector(selectUser);
-    const {recipients} = useRecipient();
     const [textMessage, setTextMessage] = useState();
     const messages = useSelector(selectMessages);
     const scroll = useRef();
@@ -20,17 +18,14 @@ const ChatBox = ({data, isLoading, send}) => {
         });
     }, [messages]);
 
-    if (!recipients) {
+    if (!data) {
         return (<p style={{textAlign: "center", width: "100%"}}>No composition selected yet...</p>)
-    }
-    if (isLoading) {
-        return (<p style={{textAlign: "center", width: "100%"}}>Loading ...</p>)
     }
     return (
         <Stack gap={4} className="chat-box">
             <div className="chat-header">
                 <strong>
-                    {recipients?.name}
+                    recipient name
                 </strong>
             </div>
             <Stack gap={3} className="messages">

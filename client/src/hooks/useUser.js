@@ -1,47 +1,30 @@
 import {useCallback, useEffect, useState} from "react";
-import jwt from 'jwt-decode';
 import {useDispatch, useSelector} from "react-redux";
-import {
-    loginUserAsync,
-    logoutUser,
-    registerUserAsync,
-    selectJwt,
-    selectUser,
-    setUser,
-    setUserAsync
-} from "../features/user/UserSlice.js";
-import {selectSocket} from "../features/socket/SocketSlice.js";
+import {logoutUser, selectJwt, selectUser, setCred, setToken, setUser} from "../features/user/UserSlice.js";
 
 function useUser() {
     const [isLoading, setIsLoading] = useState(false);
     const token = useSelector(selectJwt);
     const userInfo = useSelector(selectUser);
     const dispatch = useDispatch();
-    const socket = useSelector(selectSocket);
 
     const register = useCallback(async (values, {setSubmitting}) => {
         setIsLoading(true);
-        await dispatch(registerUserAsync(values, socket));
+        await dispatch(setCred(values));
         setIsLoading(false);
         setSubmitting(false);
-    }, [socket]);
+    }, []);
 
     const login = useCallback(async (values, {setSubmitting}) => {
         setIsLoading(true);
-        await dispatch(loginUserAsync(values, socket));
+        await dispatch(setCred(values));
         setIsLoading(false);
         setSubmitting(false);
-    }, [socket]);
+    }, []);
 
     useEffect(() => {
-        if (socket == null) return;
         if (!token) return;
         localStorage.setItem("jwt", JSON.stringify(token));
-        if (!userInfo)
-            dispatch(setUserAsync(jwt(token)._id, socket));
-        return () => {
-            socket.off("getUser");
-        };
     }, [token]);
 
     useEffect(() => {
@@ -50,6 +33,9 @@ function useUser() {
     }, [userInfo]);
 
     useEffect(() => {
+        const storedJWT = localStorage.getItem("jwt");
+        if (storedJWT == null) return;
+        dispatch(setToken(JSON.parse(storedJWT)));
         const storedUser = localStorage.getItem("User");
         if (storedUser == null) return;
         dispatch(setUser(JSON.parse(storedUser)));
