@@ -8,6 +8,7 @@ import {selectMessages} from "../../features/message/MessageSlice.js";
 
 const ChatBox = ({data, send}) => {
     const user = useSelector(selectUser);
+    const recipient = useSelector(selectRecipient);
     const [textMessage, setTextMessage] = useState();
     const messages = useSelector(selectMessages);
     const scroll = useRef();
@@ -25,7 +26,7 @@ const ChatBox = ({data, send}) => {
         <Stack gap={4} className="chat-box">
             <div className="chat-header">
                 <strong>
-                    recipient name
+                    {recipient?.name}
                 </strong>
             </div>
             <Stack gap={3} className="messages">

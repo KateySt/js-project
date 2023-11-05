@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {selectOnlineUsers, selectUser, selectUsers} from "../features/user/UserSlice.js";
+import {selectOnlineUsers, selectUser, selectUsers, setRecipient} from "../features/user/UserSlice.js";
 import {selectChat, selectChats, selectCurrentChat, setChat, setCurrentChat} from "../features/chat/ChatSlice.js";
 import {getNotification, setMessage} from "../features/message/MessageSlice.js";
 
@@ -16,6 +16,7 @@ function useChat() {
 
     const updateCurrentChat = useCallback(async (chat) => {
         await dispatch(setCurrentChat(chat.chat));
+        await dispatch(setRecipient(chat.user));
     }, []);
 
     const sendTextMessage = useCallback(async (textMessage, sender, currentChatId, setTextMessage) => {

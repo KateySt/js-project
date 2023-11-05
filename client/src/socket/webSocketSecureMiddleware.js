@@ -52,32 +52,41 @@ export const webSocketSecureMiddleware = (store) => (next) => (action) => {
         });
     }
     if (socket) {
-        if (chatsState.currentChat && messagesState.message) {
+        if (chatsState.currentChat
+            && messagesState.message
+            && action.type === 'messages/setMessage') {
             const recipientId = chatsState.currentChat?.members.find(id => id !== usersState.user?._id);
             socket.emit("sendMessage", {...messagesState.message, recipientId});
         }
-        if (usersState.user && action.type === 'users/setUser') {
+        if (usersState.user) {
             socket.emit("addNewUser", usersState.user?._id);
         }
-        if (usersState.user && action.type === 'users/setUser') {
+        if (usersState.user
+            && action.type === 'users/setUser') {
             socket.emit("findUserChats", usersState.user?._id);
         }
-        if ((usersState.user && action.type === 'users/setUser')
+        if ((usersState.user
+                && action.type === 'users/setUser')
             || (action.type === 'chats/setChat')
-            || (messagesState.message && action.type === 'messages/setMessage')) {
+            || (messagesState.message
+                && action.type === 'messages/setMessage')) {
             socket.emit("findRecipient", usersState.user?._id);
         }
-        if (usersState.user && action.type === 'users/setUser') {
+        if (usersState.user
+            && action.type === 'users/setUser') {
             socket.emit("findAll");
         }
-        if (chatsState.chat && action.type === 'chats/setChat') {
+        if (chatsState.chat
+            && action.type === 'chats/setChat') {
             socket.emit("createChat", chatsState.chat);
         }
-        if (chatsState.currentChat && action.type === 'chats/setCurrentChat'
-            || (messagesState.message && action.type === 'messages/setMessage')) {
+        if (chatsState.currentChat
+            || (messagesState.message
+                && action.type === 'messages/setMessage')) {
             socket.emit("getMessages", chatsState.currentChat);
         }
-        if (messagesState.message && action.type === 'messages/setMessage') {
+        if (messagesState.message
+            && action.type === 'messages/setMessage') {
             socket.emit("creatMessage", messagesState.message);
         }
         if (action.type === 'users/logoutUser') {
