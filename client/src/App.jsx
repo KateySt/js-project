@@ -6,15 +6,17 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import {Container} from "react-bootstrap";
 import NavBar from "./components/navbar/NavBar.jsx";
 import {useDispatch, useSelector} from "react-redux";
-import {selectUser} from "./features/user/UserSlice.js";
+import {selectJwt, selectUser} from "./features/user/UserSlice.js";
 import {useEffect} from "react";
+import {URL_WS, URL_WSS} from "./storege/middleware/middleware.js";
 import {io} from "socket.io-client";
-import {setSocket} from "./features/socket/SocketSlice.js";
-import {URL_WS} from "./main.jsx";
+import {setSocket, setWSS} from "./features/SocketSlice.js";
 
 function App() {
-
+    const userInfo = useSelector(selectUser);
     const dispatch = useDispatch();
+    const token = useSelector(selectJwt);
+
     useEffect(() => {
         const newSocket = io(URL_WS);
         dispatch(setSocket(newSocket));
@@ -23,7 +25,17 @@ function App() {
         }
     }, []);
 
-    const userInfo = useSelector(selectUser);
+    useEffect(() => {
+        if (!token) return;
+        const newSocket = io(URL_WSS, {
+            auth:
+                {token: token}
+        });
+        dispatch(setWSS(newSocket));
+        return () => {
+            newSocket.disconnect();
+        }
+    }, [token]);
     return (
         <>
             <NavBar/>

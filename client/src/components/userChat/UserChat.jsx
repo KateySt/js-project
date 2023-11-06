@@ -38,7 +38,7 @@ const UserChat = ({data, onlineUsers, markThisNotificationAsRead}) => {
                     <img src={avatar} height="35px" alt="avatar"/>
                 </div>
                 <div className="text-content">
-                    <div className="name">{data?.name}</div>
+                    <div className="name">{data.user?.name}</div>
                     <div className="text">
                         {data.message[0]?.text &&
                             (<span>{truncateText(data.message[0]?.text)}</span>)

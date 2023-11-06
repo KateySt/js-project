@@ -1,24 +1,22 @@
-import {useSelector} from "react-redux";
-import {selectUser} from "../features/user/UserSlice.js";
-import {useEffect, useState} from "react";
-import {selectSocket} from "../features/socket/SocketSlice.js";
+import {useDispatch, useSelector} from "react-redux";
+import {selectRecipients, selectUser, setRecipientsAsync} from "../features/user/UserSlice.js";
+import {useEffect} from "react";
+import {selectChats} from "../features/chat/ChatSlice.js";
+import {selectMessage} from "../features/message/MessageSlice.js";
+import {selectWSS} from "../features/SocketSlice.js";
 
 export const useRecipient = () => {
+    const dispatch = useDispatch();
     const user = useSelector(selectUser);
-    const [recipients, setRecipients] = useState(null);
-    const socket = useSelector(selectSocket);
-
+    const chatsInfo = useSelector(selectChats);
+    const recipients = useSelector(selectRecipients);
+    const message = useSelector(selectMessage);
+    const socket = useSelector(selectWSS);
     useEffect(() => {
-        if (socket == null) return;
         if (user == null) return;
-        socket.emit("findRecipient", user?._id);
-        socket.on("getRecipient", (user) => {
-            setRecipients(user);
-        });
-        return () => {
-            socket.off("getUser");
-        };
-    }, [user]);
+        dispatch(setRecipientsAsync(user,socket));
+    }, [user, chatsInfo, message]);
+
     return {
         recipients
     };

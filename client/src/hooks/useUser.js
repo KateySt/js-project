@@ -7,10 +7,11 @@ import {
     registerUserAsync,
     selectJwt,
     selectUser,
+    setToken,
     setUser,
     setUserAsync
 } from "../features/user/UserSlice.js";
-import {selectSocket} from "../features/socket/SocketSlice.js";
+import {selectSocket} from "../features/SocketSlice.js";
 
 function useUser() {
     const [isLoading, setIsLoading] = useState(false);
@@ -34,14 +35,9 @@ function useUser() {
     }, [socket]);
 
     useEffect(() => {
-        if (socket == null) return;
-        if (token && !userInfo) {
-            localStorage.setItem("jwt", JSON.stringify(token));
-            dispatch(setUserAsync(jwt(token)._id, socket));
-        }
-        return () => {
-            socket.off("getUser");
-        };
+        if (!token) return
+        localStorage.setItem("jwt", JSON.stringify(token));
+        dispatch(setUserAsync(jwt(token)._id, socket));
     }, [token]);
 
     useEffect(() => {
@@ -50,6 +46,9 @@ function useUser() {
     }, [userInfo]);
 
     useEffect(() => {
+        const storedJWT = localStorage.getItem("jwt");
+        if (storedJWT == null) return;
+        dispatch(setToken(JSON.parse(storedJWT)));
         const storedUser = localStorage.getItem("User");
         if (storedUser == null) return;
         dispatch(setUser(JSON.parse(storedUser)));

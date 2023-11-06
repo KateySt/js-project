@@ -10,7 +10,6 @@ export const MessagesSlice = createSlice({
     reducers: {
         createMessage: (state, action) => {
             state.message = action.payload;
-            state.messages = [...state.messages, action.payload];
         },
         getMessages: (state, action) => {
             state.messages = action.payload;
@@ -38,18 +37,40 @@ export const {
 export const selectMessages = (state) => state.messages.messages;
 export const selectMessage = (state) => state.messages.message;
 export const selectNotifications = (state) => state.messages.notifications;
-export const createMessageAsync = (element, socket) => (dispatch) => {
-    if (socket == null) return;
-    socket.emit("creatMessage", element);
-    socket.on("getCreatedMessage", (user) => {
+export const createMessageAsync = (element,socketSecure) => (dispatch) => {
+    if (socketSecure == null) return;
+    socketSecure.emit("creatMessage", element);
+    socketSecure.on("getCreatedMessage", (user) => {
         dispatch(createMessage(user));
     });
 }
-
-export const getMessagesAsync = (element, socket) => (dispatch) => {
-    if (socket == null) return;
-    socket.emit("getMessages", element);
-    socket.on("getMessagesById", (user) => {
+export const sendMessageAsync = (message, currentChat, user,socketSecure) => () => {
+    if (socketSecure == null) return;
+    const recipientId = currentChat?.members.find(id => id !== user?._id);
+    socketSecure.emit("sendMessage", {...message, recipientId});
+}
+export const getMessageAsync = (currentChat,socketSecure) => (dispatch) => {
+    if (socketSecure == null) return;
+    socketSecure.on("getMessage", (res) => {
+        if (currentChat?._id !== res.chatId) return;
+        dispatch(updateMessages(res));
+    });
+}
+export const getNotificationAsync = (currentChat,socketSecure) => (dispatch) => {
+    if (socketSecure == null) return;
+    socketSecure.on("getNotification", (res) => {
+        const isChatOpen = currentChat?.members.some(id => id === res.senderId);
+        if (isChatOpen) {
+            dispatch(getNotifications({...res, isRead: true}))
+        } else {
+            dispatch(getNotifications(res))
+        }
+    });
+}
+export const getMessagesAsync = (element,socketSecure) => (dispatch) => {
+    if (socketSecure == null) return;
+    socketSecure.emit("getMessages", element);
+    socketSecure.on("getMessagesById", (user) => {
         dispatch(getMessages(user));
     });
 }

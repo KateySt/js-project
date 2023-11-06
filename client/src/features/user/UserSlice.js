@@ -6,19 +6,28 @@ export const UsersSlice = createSlice({
         users: [],
         jwt: "",
         user: null,
+        recipients: [],
+        recipient: null,
+        usersOnline: [],
     },
     reducers: {
+        setUsersOnline: (state, action) => {
+            state.usersOnline = action.payload;
+        },
         setUser: (state, action) => {
             state.user = action.payload;
         },
-        findUsers: (state, action) => {
+        setUsers: (state, action) => {
             state.users = action.payload;
         },
-        register: (state, action) => {
+        setToken: (state, action) => {
             state.jwt = action.payload;
         },
-        login: (state, action) => {
-            state.jwt = action.payload;
+        setRecipients: (state, action) => {
+            state.recipients = action.payload;
+        },
+        setRecipient: (state, action) => {
+            state.recipient = action.payload;
         },
         logoutUser: (state) => {
             state.jwt = "";
@@ -28,44 +37,61 @@ export const UsersSlice = createSlice({
 });
 
 export const {
-    register,
+    setToken,
     setUser,
-    login,
-    findUsers,
-    logoutUser
+    setUsers,
+    logoutUser,
+    setRecipients,
+    setRecipient,
+    setUsersOnline,
 } = UsersSlice.actions;
 
 export const selectJwt = (state) => state.users.jwt;
 export const selectUser = (state) => state.users.user;
 export const selectUsers = (state) => state.users.users;
 export const selectRecipients = (state) => state.users.recipients;
-export const registerUserAsync = (element, socket) => (dispatch) => {
+export const selectRecipient = (state) => state.users.recipient;
+export const selectUsersOnline = (state) => state.users.usersOnline;
+export const registerUserAsync = (element,socket) => (dispatch) => {
     if (socket == null) return;
     socket.emit("register", element);
     socket.on("getToken", (token) => {
-        dispatch(register(token));
+        dispatch(setToken(token));
     });
 }
-
-export const loginUserAsync = (element, socket) => (dispatch) => {
+export const loginUserAsync = (element,socket) => (dispatch) => {
     if (socket == null) return;
     socket.emit("login", element);
     socket.on("getToken", (token) => {
-        dispatch(login(token));
+        dispatch(setToken(token));
     });
 }
-export const setUserAsync = (element, socket) => (dispatch) => {
+export const setUserAsync = (element,socket) => (dispatch) => {
     if (socket == null) return;
     socket.emit("find", element);
     socket.on("getUser", (user) => {
         dispatch(setUser(user));
     });
 }
-export const findUsersAsync = (socket) => (dispatch) => {
-    if (socket == null) return;
-    socket.emit("findAll");
-    socket.on("getUsers", (user) => {
-        dispatch(findUsers(user));
+export const setUsersOnlineAsync = (element,socketSecure) => (dispatch) => {
+    if (socketSecure == null) return;
+    socketSecure.emit("addNewUser", element?._id);
+    socketSecure.on("getOnlineUsers", (res) => {
+        dispatch(setUsersOnline(res));
+    });
+}
+export const setRecipientsAsync = (element,socketSecure) => (dispatch) => {
+    if (socketSecure == null) return;
+    socketSecure.emit("findRecipient", element?._id);
+    socketSecure.on("getRecipient", (user) => {
+        dispatch(setRecipients(user));
+    });
+}
+export const findUsersAsync = (socketSecure) => (dispatch) => {
+    if (socketSecure == null) return;
+    socketSecure.emit("findAll");
+    socketSecure.on("getUsers", (user) => {
+        dispatch(setUsers(user));
     });
 }
 export default UsersSlice.reducer;
