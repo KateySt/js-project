@@ -37,26 +37,30 @@ export const {
 export const selectMessages = (state) => state.messages.messages;
 export const selectMessage = (state) => state.messages.message;
 export const selectNotifications = (state) => state.messages.notifications;
-export const createMessageAsync = (element,socketSecure) => (dispatch) => {
+export const createMessageAsync = (element) => (dispatch, getState) => {
+    const {socketSecure} = getState().socket;
     if (socketSecure == null) return;
     socketSecure.emit("creatMessage", element);
     socketSecure.on("getCreatedMessage", (user) => {
         dispatch(createMessage(user));
     });
 }
-export const sendMessageAsync = (message, currentChat, user,socketSecure) => () => {
+export const sendMessageAsync = (message, currentChat, user) => (dispatch, getState) => {
+    const {socketSecure} = getState().socket;
     if (socketSecure == null) return;
     const recipientId = currentChat?.members.find(id => id !== user?._id);
     socketSecure.emit("sendMessage", {...message, recipientId});
 }
-export const getMessageAsync = (currentChat,socketSecure) => (dispatch) => {
+export const getMessageAsync = (currentChat) => (dispatch, getState) => {
+    const {socketSecure} = getState().socket;
     if (socketSecure == null) return;
     socketSecure.on("getMessage", (res) => {
         if (currentChat?._id !== res.chatId) return;
         dispatch(updateMessages(res));
     });
 }
-export const getNotificationAsync = (currentChat,socketSecure) => (dispatch) => {
+export const getNotificationAsync = (currentChat) => (dispatch, getState) => {
+    const {socketSecure} = getState().socket;
     if (socketSecure == null) return;
     socketSecure.on("getNotification", (res) => {
         const isChatOpen = currentChat?.members.some(id => id === res.senderId);
@@ -67,7 +71,8 @@ export const getNotificationAsync = (currentChat,socketSecure) => (dispatch) => 
         }
     });
 }
-export const getMessagesAsync = (element,socketSecure) => (dispatch) => {
+export const getMessagesAsync = (element) => (dispatch, getState) => {
+    const {socketSecure} = getState().socket;
     if (socketSecure == null) return;
     socketSecure.emit("getMessages", element);
     socketSecure.on("getMessagesById", (user) => {

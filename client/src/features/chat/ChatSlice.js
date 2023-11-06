@@ -23,21 +23,24 @@ export const {
 
 export const selectChat = (state) => state.chats.chat;
 export const selectChats = (state) => state.chats.chats;
-export const createChatAsync = (element,socketSecure) => (dispatch) => {
+export const createChatAsync = (element) => (dispatch,getState) => {
+    const {socketSecure} = getState().socket;
     if (socketSecure == null) return;
     socketSecure.emit("createChat", element);
     socketSecure.on("getChat", (user) => {
         dispatch(setChat(user));
     });
 }
-export const findUserChatsAsync = (element,socketSecure) => (dispatch) => {
+export const findUserChatsAsync = (element) => (dispatch,getState) => {
+    const {socketSecure} = getState().socket;
     if (socketSecure == null) return;
     socketSecure.emit("findUserChats", element);
     socketSecure.on("getUserChats", (user) => {
         dispatch(setUserChats(user));
     });
 }
-export const findChatAsync = (element,socketSecure) => (dispatch) => {
+export const findChatAsync = (element) => (dispatch,getState) => {
+    const {socketSecure} = getState().socket;
     if (socketSecure == null) return;
     socketSecure.emit("findChat", element);
     socketSecure.on("getFindChat", (user) => {

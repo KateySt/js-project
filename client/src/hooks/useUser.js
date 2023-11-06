@@ -22,14 +22,14 @@ function useUser() {
 
     const register = useCallback(async (values, {setSubmitting}) => {
         setIsLoading(true);
-        await dispatch(registerUserAsync(values, socket));
+        await dispatch(registerUserAsync(values));
         setIsLoading(false);
         setSubmitting(false);
     }, [socket]);
 
     const login = useCallback(async (values, {setSubmitting}) => {
         setIsLoading(true);
-        await dispatch(loginUserAsync(values, socket));
+        await dispatch(loginUserAsync(values));
         setIsLoading(false);
         setSubmitting(false);
     }, [socket]);
@@ -37,7 +37,7 @@ function useUser() {
     useEffect(() => {
         if (!token) return
         localStorage.setItem("jwt", JSON.stringify(token));
-        dispatch(setUserAsync(jwt(token)._id, socket));
+        dispatch(setUserAsync(jwt(token)._id));
     }, [token]);
 
     useEffect(() => {

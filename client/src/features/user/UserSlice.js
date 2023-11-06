@@ -52,42 +52,47 @@ export const selectUsers = (state) => state.users.users;
 export const selectRecipients = (state) => state.users.recipients;
 export const selectRecipient = (state) => state.users.recipient;
 export const selectUsersOnline = (state) => state.users.usersOnline;
-export const registerUserAsync = (element,socket) => (dispatch) => {
+export const registerUserAsync = (element) => (dispatch, getState) => {
+    const {socket} = getState().socket;
     if (socket == null) return;
     socket.emit("register", element);
     socket.on("getToken", (token) => {
         dispatch(setToken(token));
     });
 }
-export const loginUserAsync = (element,socket) => (dispatch) => {
+export const loginUserAsync = (element) => (dispatch, getState) => {
+    const {socket} = getState().socket;
     if (socket == null) return;
     socket.emit("login", element);
     socket.on("getToken", (token) => {
         dispatch(setToken(token));
     });
 }
-export const setUserAsync = (element,socket) => (dispatch) => {
+export const setUserAsync = (element) => (dispatch, getState) => {
+    const {socket} = getState().socket;
     if (socket == null) return;
     socket.emit("find", element);
     socket.on("getUser", (user) => {
         dispatch(setUser(user));
     });
 }
-export const setUsersOnlineAsync = (element,socketSecure) => (dispatch) => {
+export const setUsersOnlineAsync = (element, socketSecure) => (dispatch) => {
     if (socketSecure == null) return;
     socketSecure.emit("addNewUser", element?._id);
     socketSecure.on("getOnlineUsers", (res) => {
         dispatch(setUsersOnline(res));
     });
 }
-export const setRecipientsAsync = (element,socketSecure) => (dispatch) => {
+export const setRecipientsAsync = (element) => (dispatch,getState) => {
+    const {socketSecure} = getState().socket;
     if (socketSecure == null) return;
     socketSecure.emit("findRecipient", element?._id);
     socketSecure.on("getRecipient", (user) => {
         dispatch(setRecipients(user));
     });
 }
-export const findUsersAsync = (socketSecure) => (dispatch) => {
+export const findUsersAsync = () => (dispatch,getState) => {
+    const {socketSecure} = getState().socket;
     if (socketSecure == null) return;
     socketSecure.emit("findAll");
     socketSecure.on("getUsers", (user) => {

@@ -10,7 +10,7 @@ import {selectJwt, selectUser} from "./features/user/UserSlice.js";
 import {useEffect} from "react";
 import {URL_WS, URL_WSS} from "./storege/middleware/middleware.js";
 import {io} from "socket.io-client";
-import {setSocket, setWSS} from "./features/SocketSlice.js";
+import {setSocket, setSocketSecure} from "./features/socket/SocketSlice.js";
 
 function App() {
     const userInfo = useSelector(selectUser);
@@ -31,11 +31,12 @@ function App() {
             auth:
                 {token: token}
         });
-        dispatch(setWSS(newSocket));
+        dispatch(setSocketSecure(newSocket));
         return () => {
             newSocket.disconnect();
         }
     }, [token]);
+
     return (
         <>
             <NavBar/>

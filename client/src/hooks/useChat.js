@@ -19,7 +19,7 @@ import {
     selectNotifications,
     sendMessageAsync
 } from "../features/message/MessageSlice.js";
-import {selectWSS} from "../features/SocketSlice.js";
+import {selectSocketSecure} from "../features/socket/SocketSlice.js";
 
 
 function useChat() {
@@ -35,20 +35,20 @@ function useChat() {
     const onlineUsers = useSelector(selectUsersOnline);
     const message = useSelector(selectMessage);
     const notifications = useSelector(selectNotifications);
-    const socket = useSelector(selectWSS);
+    const socket = useSelector(selectSocketSecure);
 
     useEffect(() => {
         if (!user) return;
-        dispatch(setUsersOnlineAsync(user,socket));
+        dispatch(setUsersOnlineAsync(user));
     }, [socket]);
 
     useEffect(() => {
-        dispatch(sendMessageAsync(message, currentChat, user,socket));
+        dispatch(sendMessageAsync(message, currentChat, user));
     }, [message]);
 
     useEffect(() => {
-        dispatch(getMessageAsync(currentChat,socket));
-        dispatch(getNotificationAsync(currentChat,socket));
+        dispatch(getMessageAsync(currentChat));
+        dispatch(getNotificationAsync(currentChat));
     }, [currentChat]);
 
     const updateCurrentChat = useCallback(async (chat) => {
@@ -62,26 +62,26 @@ function useChat() {
             chatId: currentChatId,
             senderId: sender._id,
             text: textMessage,
-        },socket));
+        }));
         setTextMessage("");
     }, []);
 
     useEffect(() => {
         if (user == null) return;
         setIsChatLoading(true);
-        dispatch(findUserChatsAsync(user._id,socket));
+        dispatch(findUserChatsAsync(user._id));
         setIsChatLoading(false);
     }, [user, chatInfo]);
 
     useEffect(() => {
         if (currentChat == null) return;
         setIsMessageLoading(true);
-        dispatch(getMessagesAsync(currentChat?._id,socket));
+        dispatch(getMessagesAsync(currentChat?._id));
         setIsMessageLoading(false);
     }, [currentChat, message]);
 
     useEffect(() => {
-        dispatch(findUsersAsync(socket));
+        dispatch(findUsersAsync());
         const pChats = users.filter((u) => {
             let isChatCreated = false;
             if (user._id === u._id) return false;
@@ -94,13 +94,13 @@ function useChat() {
             return !isChatCreated;
         });
         setPotentialChat(pChats);
-    }, [user, chatsInfo, users]);
+    }, [chatsInfo, users]);
 
     const creatChat = useCallback(async (firstId, secondId) => {
         await dispatch(createChatAsync({
             firstId: firstId,
             secondId: secondId
-        },socket));
+        }));
     }, []);
 
     const markAllNotificationAsRead = useCallback((notification) => {
