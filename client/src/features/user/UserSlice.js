@@ -6,23 +6,13 @@ export const UsersSlice = createSlice({
         users: [],
         jwt: "",
         user: null,
-        cred: null,
-        onlineUsers: null,
         recipients: [],
         recipient: null,
+        usersOnline: [],
     },
     reducers: {
-        setRecipient: (state, action) => {
-            state.recipient = action.payload;
-        },
-        setRecipients: (state, action) => {
-            state.recipients = action.payload;
-        },
-        setOnlineUsers: (state, action) => {
-            state.onlineUsers = action.payload;
-        },
-        setCred: (state, action) => {
-            state.cred = action.payload;
+        setUsersOnline: (state, action) => {
+            state.usersOnline = action.payload;
         },
         setUser: (state, action) => {
             state.user = action.payload;
@@ -33,6 +23,12 @@ export const UsersSlice = createSlice({
         setToken: (state, action) => {
             state.jwt = action.payload;
         },
+        setRecipients: (state, action) => {
+            state.recipients = action.payload;
+        },
+        setRecipient: (state, action) => {
+            state.recipient = action.payload;
+        },
         logoutUser: (state) => {
             state.jwt = "";
             state.user = null;
@@ -41,20 +37,66 @@ export const UsersSlice = createSlice({
 });
 
 export const {
-    setRecipient,
-    setRecipients,
-    setOnlineUsers,
-    setUser,
     setToken,
+    setUser,
     setUsers,
     logoutUser,
-    setCred,
+    setRecipients,
+    setRecipient,
+    setUsersOnline,
 } = UsersSlice.actions;
 
 export const selectJwt = (state) => state.users.jwt;
-export const selectRecipients = (state) => state.users.recipients;
-export const selectRecipient = (state) => state.users.recipient;
 export const selectUser = (state) => state.users.user;
 export const selectUsers = (state) => state.users.users;
-export const selectOnlineUsers = (state) => state.users.onlineUsers;
+export const selectRecipients = (state) => state.users.recipients;
+export const selectRecipient = (state) => state.users.recipient;
+export const selectUsersOnline = (state) => state.users.usersOnline;
+export const registerUserAsync = (element) => (dispatch, getState) => {
+    const {socket} = getState().socket;
+    if (socket == null) return;
+    socket.emit("register", element);
+    socket.on("getToken", (token) => {
+        dispatch(setToken(token));
+    });
+}
+export const loginUserAsync = (element) => (dispatch, getState) => {
+    const {socket} = getState().socket;
+    if (socket == null) return;
+    socket.emit("login", element);
+    socket.on("getToken", (token) => {
+        dispatch(setToken(token));
+    });
+}
+export const setUserAsync = (element) => (dispatch, getState) => {
+    const {socket} = getState().socket;
+    if (socket == null) return;
+    socket.emit("find", element);
+    socket.on("getUser", (user) => {
+        dispatch(setUser(user));
+    });
+}
+export const setUsersOnlineAsync = (element, socketSecure) => (dispatch) => {
+    if (socketSecure == null) return;
+    socketSecure.emit("addNewUser", element?._id);
+    socketSecure.on("getOnlineUsers", (res) => {
+        dispatch(setUsersOnline(res));
+    });
+}
+export const setRecipientsAsync = (element) => (dispatch,getState) => {
+    const {socketSecure} = getState().socket;
+    if (socketSecure == null) return;
+    socketSecure.emit("findRecipient", element?._id);
+    socketSecure.on("getRecipient", (user) => {
+        dispatch(setRecipients(user));
+    });
+}
+export const findUsersAsync = () => (dispatch,getState) => {
+    const {socketSecure} = getState().socket;
+    if (socketSecure == null) return;
+    socketSecure.emit("findAll");
+    socketSecure.on("getUsers", (user) => {
+        dispatch(setUsers(user));
+    });
+}
 export default UsersSlice.reducer;
