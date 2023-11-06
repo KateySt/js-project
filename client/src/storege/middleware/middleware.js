@@ -1,5 +1,5 @@
 import {io} from "socket.io-client";
-import {setSocket} from "../../features/SocketSlice.js";
+import {setSocket} from "../../features/socket/SocketSlice.js";
 
 let socket = null;
 let socketSecure;

@@ -11,7 +11,7 @@ import {
     setUser,
     setUserAsync
 } from "../features/user/UserSlice.js";
-import {selectSocket} from "../features/SocketSlice.js";
+import {selectSocket} from "../features/socket/SocketSlice.js";
 
 function useUser() {
     const [isLoading, setIsLoading] = useState(false);
