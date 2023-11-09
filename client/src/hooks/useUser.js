@@ -2,43 +2,48 @@ import {useCallback, useEffect, useState} from "react";
 import jwt from 'jwt-decode';
 import {useDispatch, useSelector} from "react-redux";
 import {
-    loginUserAsync,
+    foundUserAsync,
+    getTokenAsync,
     logoutUser,
-    registerUserAsync,
     selectJwt,
     selectUser,
+    setAuthAsync,
     setToken,
     setUser,
     setUserAsync
 } from "../features/user/UserSlice.js";
-import {selectSocket} from "../features/socket/SocketSlice.js";
 
 function useUser() {
     const [isLoading, setIsLoading] = useState(false);
     const token = useSelector(selectJwt);
     const userInfo = useSelector(selectUser);
     const dispatch = useDispatch();
-    const socket = useSelector(selectSocket);
 
     const register = useCallback(async (values, {setSubmitting}) => {
         setIsLoading(true);
-        await dispatch(registerUserAsync(values));
+        await dispatch(setAuthAsync(values));
+        await dispatch(getTokenAsync());
         setIsLoading(false);
         setSubmitting(false);
-    }, [socket]);
+    }, []);
 
     const login = useCallback(async (values, {setSubmitting}) => {
         setIsLoading(true);
-        await dispatch(loginUserAsync(values));
+        await dispatch(setAuthAsync(values));
+        await dispatch(getTokenAsync());
         setIsLoading(false);
         setSubmitting(false);
-    }, [socket]);
+    }, []);
 
     useEffect(() => {
         if (!token) return
         localStorage.setItem("jwt", JSON.stringify(token));
-        dispatch(setUserAsync(jwt(token)._id));
+        dispatch(foundUserAsync(jwt(token)._id));
     }, [token]);
+
+    useEffect(() => {
+        dispatch(setUserAsync());
+    }, []);
 
     useEffect(() => {
         if (!userInfo) return;

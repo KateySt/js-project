@@ -8,10 +8,8 @@ import {selectNotifications} from "../../features/message/MessageSlice.js";
 const UserChat = ({data, onlineUsers, markThisNotificationAsRead}) => {
     const notifications = useSelector(selectNotifications);
     const unreadNotifications = unreadNotificationsFun(notifications);
-    const thisUserNotifications = unreadNotifications?.filter(n => {
-        return n.senderId === data?._id
-    });
-    const isOnline = onlineUsers?.some((user) => user?.userId === data?._id);
+    const thisUserNotifications = unreadNotifications?.filter(n =>  n.senderId === data.user?._id);
+    const isOnline = onlineUsers?.some((user) => user?.userId === data.user?._id);
     const truncateText = (text) => {
         let shortText = text.substring(0, 20);
         if (text.length > 20) {

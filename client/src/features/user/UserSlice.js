@@ -1,4 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
+import {webSocketMiddleware, webSocketSecureMiddleware} from "../../socket/chatAPI.js";
 
 export const UsersSlice = createSlice({
     name: 'users',
@@ -52,51 +53,34 @@ export const selectUsers = (state) => state.users.users;
 export const selectRecipients = (state) => state.users.recipients;
 export const selectRecipient = (state) => state.users.recipient;
 export const selectUsersOnline = (state) => state.users.usersOnline;
-export const registerUserAsync = (element) => (dispatch, getState) => {
-    const {socket} = getState().socket;
-    if (socket == null) return;
-    socket.emit("register", element);
-    socket.on("getToken", (token) => {
-        dispatch(setToken(token));
-    });
+export const setAuthAsync = (element) => () => {
+    webSocketMiddleware.setJWT(element);
 }
-export const loginUserAsync = (element) => (dispatch, getState) => {
-    const {socket} = getState().socket;
-    if (socket == null) return;
-    socket.emit("login", element);
-    socket.on("getToken", (token) => {
-        dispatch(setToken(token));
-    });
+export const getTokenAsync = () => (dispatch) => {
+    webSocketMiddleware.subscribeJWT((token) => dispatch(setToken(token)));
 }
-export const setUserAsync = (element) => (dispatch, getState) => {
-    const {socket} = getState().socket;
-    if (socket == null) return;
-    socket.emit("find", element);
-    socket.on("getUser", (user) => {
-        dispatch(setUser(user));
-    });
+export const foundUserAsync = (element) => () => {
+    webSocketMiddleware.findUser(element);
 }
-export const setUsersOnlineAsync = (element, socketSecure) => (dispatch) => {
-    if (socketSecure == null) return;
-    socketSecure.emit("addNewUser", element?._id);
-    socketSecure.on("getOnlineUsers", (res) => {
-        dispatch(setUsersOnline(res));
-    });
+export const setUserAsync = () => (dispatch) => {
+    webSocketMiddleware.subscribeUser((user) => dispatch(setUser(user)));
 }
-export const setRecipientsAsync = (element) => (dispatch,getState) => {
-    const {socketSecure} = getState().socket;
-    if (socketSecure == null) return;
-    socketSecure.emit("findRecipient", element?._id);
-    socketSecure.on("getRecipient", (user) => {
-        dispatch(setRecipients(user));
-    });
+export const setUsersOnlineAsync = (element) => () => {
+    webSocketSecureMiddleware.addNewUserOnline(element);
 }
-export const findUsersAsync = () => (dispatch,getState) => {
-    const {socketSecure} = getState().socket;
-    if (socketSecure == null) return;
-    socketSecure.emit("findAll");
-    socketSecure.on("getUsers", (user) => {
-        dispatch(setUsers(user));
-    });
+export const getUsersOnlineAsync = () => (dispatch) => {
+    webSocketSecureMiddleware.subscribeOnlineUsers((users) => dispatch(setUsersOnline(users)));
+}
+export const setRecipientsAsync = (element) => () => {
+    webSocketSecureMiddleware.findUsersRecipient(element);
+}
+export const getRecipientsAsync = () => (dispatch) => {
+    webSocketSecureMiddleware.subscribeRecipient((user) => dispatch(setRecipients(user)));
+}
+export const findUsersAsync = () => () => {
+    webSocketSecureMiddleware.findUsers();
+}
+export const setUsersAsync = () => (dispatch) => {
+    webSocketSecureMiddleware.subscribeUsers((users) => dispatch(setUsers(users)));
 }
 export default UsersSlice.reducer;

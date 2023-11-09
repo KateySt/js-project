@@ -8,32 +8,24 @@ import NavBar from "./components/navbar/NavBar.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import {selectJwt, selectUser} from "./features/user/UserSlice.js";
 import {useEffect} from "react";
-import {URL_WS, URL_WSS} from "./storege/middleware/middleware.js";
-import {io} from "socket.io-client";
-import {setSocket, setSocketSecure} from "./features/socket/SocketSlice.js";
+import {webSocketMiddleware, webSocketSecureMiddleware} from "./socket/chatAPI.js";
 
 function App() {
     const userInfo = useSelector(selectUser);
-    const dispatch = useDispatch();
     const token = useSelector(selectJwt);
 
     useEffect(() => {
-        const newSocket = io(URL_WS);
-        dispatch(setSocket(newSocket));
+        webSocketMiddleware.startSocket();
         return () => {
-            newSocket.disconnect();
+            webSocketMiddleware.disconnectSocket();
         }
     }, []);
 
     useEffect(() => {
         if (!token) return;
-        const newSocket = io(URL_WSS, {
-            auth:
-                {token: token}
-        });
-        dispatch(setSocketSecure(newSocket));
+        webSocketSecureMiddleware.connectSocket(token);
         return () => {
-            newSocket.disconnect();
+            webSocketSecureMiddleware.disconnectSocket();
         }
     }, [token]);
 

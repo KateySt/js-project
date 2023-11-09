@@ -1,4 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
+import {webSocketSecureMiddleware} from "../../socket/chatAPI.js";
 
 export const ChatsSlice = createSlice({
     name: 'chats',
@@ -23,28 +24,26 @@ export const {
 
 export const selectChat = (state) => state.chats.chat;
 export const selectChats = (state) => state.chats.chats;
-export const createChatAsync = (element) => (dispatch,getState) => {
-    const {socketSecure} = getState().socket;
-    if (socketSecure == null) return;
-    socketSecure.emit("createChat", element);
-    socketSecure.on("getChat", (user) => {
-        dispatch(setChat(user));
+export const createChatAsync = (element) => () => {
+    webSocketSecureMiddleware.creatNewChat(element);
+}
+export const getChatAsync = () => (dispatch) => {
+    webSocketSecureMiddleware.subscribeNewChat((chat) => {
+        dispatch(setChat(chat));
     });
 }
-export const findUserChatsAsync = (element) => (dispatch,getState) => {
-    const {socketSecure} = getState().socket;
-    if (socketSecure == null) return;
-    socketSecure.emit("findUserChats", element);
-    socketSecure.on("getUserChats", (user) => {
-        dispatch(setUserChats(user));
+export const findUserChatsAsync = (element) => () => {
+    webSocketSecureMiddleware.findUserChats(element);
+}
+export const setUserChatsAsync = () => (dispatch) => {
+    webSocketSecureMiddleware.subscribeUserChats((chats) => {
+        dispatch(setUserChats(chats));
     });
 }
-export const findChatAsync = (element) => (dispatch,getState) => {
-    const {socketSecure} = getState().socket;
-    if (socketSecure == null) return;
-    socketSecure.emit("findChat", element);
-    socketSecure.on("getFindChat", (user) => {
-        dispatch(setChat(user));
-    });
+export const findChatAsync = (element) => () => {
+    webSocketSecureMiddleware.findOneChat(element);
+}
+export const setChatAsync = () => (dispatch) => {
+    webSocketSecureMiddleware.subscribeChat((chat) => dispatch(setChat(chat)));
 }
 export default ChatsSlice.reducer;

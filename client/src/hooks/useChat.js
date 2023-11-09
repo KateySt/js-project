@@ -2,24 +2,35 @@ import {useCallback, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {
     findUsersAsync,
+    getUsersOnlineAsync,
+    selectJwt,
     selectUser,
     selectUsers,
     selectUsersOnline,
     setRecipient,
+    setUsersAsync,
     setUsersOnlineAsync
 } from "../features/user/UserSlice.js";
-import {createChatAsync, findUserChatsAsync, selectChat, selectChats} from "../features/chat/ChatSlice.js";
+import {
+    createChatAsync,
+    findUserChatsAsync,
+    getChatAsync,
+    selectChat,
+    selectChats,
+    setUserChatsAsync
+} from "../features/chat/ChatSlice.js";
 import {
     createMessageAsync,
+    getCreatedMessageAsync,
     getMessageAsync,
     getMessagesAsync,
     getNotification,
     getNotificationAsync,
     selectMessage,
     selectNotifications,
-    sendMessageAsync
+    sendMessageAsync,
+    setMessagesAsync
 } from "../features/message/MessageSlice.js";
-import {selectSocketSecure} from "../features/socket/SocketSlice.js";
 
 
 function useChat() {
@@ -34,22 +45,25 @@ function useChat() {
     const [currentChat, setCurrentChat] = useState(null);
     const onlineUsers = useSelector(selectUsersOnline);
     const message = useSelector(selectMessage);
-    const notifications = useSelector(selectNotifications);
-    const socket = useSelector(selectSocketSecure);
-
+    const token = useSelector(selectJwt);
+    const notification = useSelector(selectNotifications);
+    console.log(notification)
     useEffect(() => {
         if (!user) return;
-        dispatch(setUsersOnlineAsync(user));
-    }, [socket]);
+        dispatch(setUsersOnlineAsync(user?._id));
+        dispatch(getUsersOnlineAsync());
+    }, []);
 
     useEffect(() => {
-        dispatch(sendMessageAsync(message, currentChat, user));
+        if (!currentChat) return;
+        const recipientId = currentChat?.members.find(id => id !== user?._id);
+        dispatch(sendMessageAsync({...message, recipientId}));
     }, [message]);
 
     useEffect(() => {
-        dispatch(getMessageAsync(currentChat));
         dispatch(getNotificationAsync(currentChat));
-    }, [currentChat]);
+        dispatch(getMessageAsync(currentChat));
+    }, []);
 
     const updateCurrentChat = useCallback(async (chat) => {
         setCurrentChat(chat.chat);
@@ -63,25 +77,33 @@ function useChat() {
             senderId: sender._id,
             text: textMessage,
         }));
+        dispatch(getCreatedMessageAsync());
         setTextMessage("");
     }, []);
 
     useEffect(() => {
-        if (user == null) return;
+        if (!user) return;
         setIsChatLoading(true);
         dispatch(findUserChatsAsync(user._id));
+        dispatch(setUserChatsAsync());
         setIsChatLoading(false);
     }, [user, chatInfo]);
 
     useEffect(() => {
-        if (currentChat == null) return;
+        if (!currentChat) return;
         setIsMessageLoading(true);
         dispatch(getMessagesAsync(currentChat?._id));
+        dispatch(setMessagesAsync());
         setIsMessageLoading(false);
     }, [currentChat, message]);
 
     useEffect(() => {
+        if (!token) return;
         dispatch(findUsersAsync());
+    }, [token]);
+
+    useEffect(() => {
+        dispatch(setUsersAsync());
         const pChats = users.filter((u) => {
             let isChatCreated = false;
             if (user._id === u._id) return false;
@@ -101,6 +123,7 @@ function useChat() {
             firstId: firstId,
             secondId: secondId
         }));
+        await dispatch(getChatAsync());
     }, []);
 
     const markAllNotificationAsRead = useCallback((notification) => {
