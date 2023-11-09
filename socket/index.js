@@ -113,6 +113,7 @@ userIo.on("connection", (socket) => {
         if (!user) return;
         userIo.to(user.socketId).emit("getMessage", message);
         userIo.to(user.socketId).emit("getNotification", {
+            _id: Date.now(),
             senderId: message.senderId,
             isRead: false,
             date: new Date(),
