@@ -21,7 +21,7 @@ const ChatBox = ({data, isLoading, send}) => {
         });
     }, [messages]);
 
-    if (!recipients) {
+    if (!recipients.length|| !data) {
         return (<p style={{textAlign: "center", width: "100%"}}>No composition selected yet...</p>)
     }
     if (isLoading) {

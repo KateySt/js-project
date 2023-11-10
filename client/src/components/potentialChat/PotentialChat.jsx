@@ -1,12 +1,9 @@
 import {useSelector} from "react-redux";
-import {selectUser} from "../../features/user/UserSlice.js";
+import {selectUser, selectUsersOnline} from "../../features/user/UserSlice.js";
 
-const PotentialChat = ({
-                           onlineUsers,
-                           creatChat,
-                           potentialChat
-                       }) => {
+const PotentialChat = ({creatChat, potentialChat}) => {
     const user = useSelector(selectUser);
+    const onlineUsers = useSelector(selectUsersOnline);
     return (
         <>
             <div className="all-users">

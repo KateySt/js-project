@@ -43,11 +43,10 @@ function useChat() {
     const [potentialChat, setPotentialChat] = useState();
     const [isMessageLoading, setIsMessageLoading] = useState(false);
     const [currentChat, setCurrentChat] = useState(null);
-    const onlineUsers = useSelector(selectUsersOnline);
     const message = useSelector(selectMessage);
     const token = useSelector(selectJwt);
     const notification = useSelector(selectNotifications);
-    console.log(notification)
+
     useEffect(() => {
         if (!user) return;
         dispatch(setUsersOnlineAsync(user?._id));
@@ -63,6 +62,17 @@ function useChat() {
     useEffect(() => {
         dispatch(getNotificationAsync(currentChat));
         dispatch(getMessageAsync(currentChat));
+    }, []);
+
+    useEffect(() => {
+        if (notification.length === 0) return;
+        localStorage.setItem("notification", JSON.stringify(notification));
+    }, [notification]);
+
+    useEffect(() => {
+        const storedNotification = localStorage.getItem("notification");
+        if (storedNotification == null) return;
+        dispatch(getNotification(JSON.parse(storedNotification)));
     }, []);
 
     const updateCurrentChat = useCallback(async (chat) => {
@@ -147,21 +157,6 @@ function useChat() {
         dispatch(getNotification(mNotifications));
     }, []);
 
-    const markThisNotificationAsRead = useCallback((thisUserNotification, notifications) => {
-        const mNotification = notifications.map(el => {
-            let notification;
-            thisUserNotification.forEach(n => {
-                if (n.senderId === el.senderId) {
-                    notification = {...n, isRead: true};
-                } else {
-                    notification = el;
-                }
-            });
-            return notification;
-        });
-        dispatch(getNotification(mNotification));
-    }, []);
-
     return {
         chatInfo,
         chatsInfo,
@@ -173,11 +168,9 @@ function useChat() {
         currentChat,
         isMessageLoading,
         sendTextMessage,
-        onlineUsers,
         users,
         markAllNotificationAsRead,
         markNotificationAsRead,
-        markThisNotificationAsRead,
     };
 }
 

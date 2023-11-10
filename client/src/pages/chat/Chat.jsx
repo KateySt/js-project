@@ -12,16 +12,13 @@ const Chat = () => {
         updateCurrentChat,
         currentChat,
         sendTextMessage,
-        onlineUsers,
         creatChat,
         potentialChat,
-        markThisNotificationAsRead,
     } = useChat();
     const recipients = useSelector(selectRecipients);
     return (
         <Container>
-            <PotentialChat creatChat={creatChat} potentialChat={potentialChat}
-                           onlineUsers={onlineUsers}/>
+            <PotentialChat creatChat={creatChat} potentialChat={potentialChat}/>
             {chatsInfo?.lenght ? null :
                 <Stack direction="horizontal" gap={4} className="align-items-start">
                     <Stack className="messages-box flex-grow-0 pe-3" gap={3}>
@@ -30,11 +27,7 @@ const Chat = () => {
                                     <div key={`row--  ${index}`}
                                          onClick={() => updateCurrentChat(value)}
                                     >
-                                        <UserChat
-                                            data={value}
-                                            markThisNotificationAsRead={markThisNotificationAsRead}
-                                            onlineUsers={onlineUsers}
-                                        />
+                                        <UserChat data={value}/>
                                     </div>
                                 )
                             }
