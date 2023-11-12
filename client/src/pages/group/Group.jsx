@@ -11,7 +11,6 @@ const Group = () => {
     const user = useSelector(selectUser);
     const [selectedUsers, setSelectedUsers] = useState([user?._id]);
     const dispatch = useDispatch();
-    const group = useSelector(selectGroup);
     const [groupName, setGroupName] = useState(null);
 
     const creatGroup = useCallback(async () => {

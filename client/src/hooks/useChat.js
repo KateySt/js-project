@@ -54,8 +54,12 @@ function useChat() {
 
     useEffect(() => {
         if (!currentChat) return;
-        const recipientId = currentChat?.members.find(id => id !== user?._id);
-        dispatch(sendMessageAsync({...message, recipientId}));
+        if (currentChat?.groupName) {
+            dispatch(sendMessageAsync({...message}, currentChat?._id));
+        } else {
+            const recipientId = currentChat?.members.find(id => id !== user?._id);
+            dispatch(sendMessageAsync({...message, recipientId}));
+        }
     }, [message]);
 
     useEffect(() => {
@@ -63,20 +67,9 @@ function useChat() {
         dispatch(getMessageAsync(currentChat));
     }, []);
 
-    useEffect(() => {
-        if (notification.length === 0) return;
-        localStorage.setItem("notification", JSON.stringify(notification));
-    }, [notification]);
-
-    useEffect(() => {
-        const storedNotification = localStorage.getItem("notification");
-        if (storedNotification == null) return;
-        dispatch(getNotification(JSON.parse(storedNotification)));
-    }, []);
-
     const updateCurrentChat = useCallback(async (chat) => {
         setCurrentChat(chat.chat);
-        await dispatch(setRecipient(chat?.user ? chat?.user : chat.chat?.groupName));
+        await dispatch(setRecipient(chat?.user ? chat?.user : chat?.chat));
     }, []);
 
     const sendTextMessage = useCallback(async (textMessage, sender, currentChatId, setTextMessage) => {
@@ -86,8 +79,8 @@ function useChat() {
             senderId: sender._id,
             text: textMessage,
         }));
-        dispatch(getCreatedMessageAsync());
         setTextMessage("");
+        await dispatch(getCreatedMessageAsync());
     }, []);
 
     useEffect(() => {
@@ -104,7 +97,7 @@ function useChat() {
         dispatch(getMessagesAsync(currentChat?._id));
         dispatch(setMessagesAsync());
         setIsMessageLoading(false);
-    }, [currentChat, message]);
+    }, [currentChat, message, notification]);
 
     useEffect(() => {
         if (!token) return;
@@ -135,11 +128,8 @@ function useChat() {
         await dispatch(getChatAsync());
     }, []);
 
-    const markAllNotificationAsRead = useCallback((notification) => {
-        const mNotification = notification.map(n => {
-            return [{...n, isRead: true}]
-        });
-        dispatch(getNotification(mNotification));
+    const markAllNotificationAsRead = useCallback(() => {
+        dispatch(getNotification([]));
     }, []);
 
     const markNotificationAsRead = useCallback((n, userChats, user, notification) => {

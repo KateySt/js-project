@@ -44,8 +44,8 @@ export const createMessageAsync = (element) => () => {
 export const getCreatedMessageAsync = () => (dispatch) => {
     webSocketSecureMiddleware.subscribeCreatedMessage((message) => dispatch(createMessage(message)));
 }
-export const sendMessageAsync = (element) => () => {
-    webSocketSecureMiddleware.sendNewMessage(element);
+export const sendMessageAsync = (element, groupId) => () => {
+    webSocketSecureMiddleware.sendNewMessage(element, groupId);
 }
 export const getMessageAsync = (currentChat) => (dispatch) => {
     webSocketSecureMiddleware.subscribeGetMessage((message) => {
@@ -55,7 +55,7 @@ export const getMessageAsync = (currentChat) => (dispatch) => {
 }
 export const getNotificationAsync = (currentChat) => (dispatch,getState) => {
     webSocketSecureMiddleware.subscribeNotification((res) => {
-        const isChatOpen = currentChat?.members.some(id => id === res.senderId);
+        const isChatOpen = currentChat?._id === res.chatId;
         const existingNotifications = getState().messages.notifications;
         const isNotificationExists = existingNotifications.some(notification => {
             return notification?._id === res._id

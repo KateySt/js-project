@@ -13,7 +13,7 @@ const Notification = () => {
     const modifiedNotifications = notifications.map(n => {
         const sender = users.find(user => user._id === n.senderId);
         return {
-            ...n,
+            ...n[0],
             senderName: sender?.name
         }
     });
@@ -39,7 +39,7 @@ const Notification = () => {
                     <div className="notifications-header">
                         <h3>Notifications</h3>
                         <div className="mark-as-read"
-                             onClick={() => markAllNotificationAsRead(notifications)}
+                             onClick={() => markAllNotificationAsRead()}
                         >
                             Mark all as read
                         </div>

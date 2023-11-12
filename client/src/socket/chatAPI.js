@@ -107,9 +107,9 @@ export const webSocketSecureMiddleware = {
             socketSecure.off("getCreatedMessage");
         }
     },
-    sendNewMessage(message) {
+    sendNewMessage(message,groupId) {
         if (!socketSecure) return;
-        socketSecure.emit("sendMessage", message);
+        socketSecure.emit("sendMessage", message, groupId);
     },
     subscribeGetMessage(callback) {
         if (!socketSecure) return;
