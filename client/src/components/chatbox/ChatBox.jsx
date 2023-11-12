@@ -21,7 +21,7 @@ const ChatBox = ({data, isLoading, send}) => {
         });
     }, [messages]);
 
-    if (!recipients.length|| !data) {
+    if (!recipients.length || !data) {
         return (<p style={{textAlign: "center", width: "100%"}}>No composition selected yet...</p>)
     }
     if (isLoading) {
@@ -31,7 +31,7 @@ const ChatBox = ({data, isLoading, send}) => {
         <Stack gap={4} className="chat-box">
             <div className="chat-header">
                 <strong>
-                    {recipient?.name}
+                    {recipient?.name ? recipient?.name : recipient}
                 </strong>
             </div>
             <Stack gap={3} className="messages">

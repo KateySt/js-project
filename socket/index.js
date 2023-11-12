@@ -49,6 +49,21 @@ userIo.on("connection", (socket) => {
         userIo.to(socket.id).emit("getChat", response);
     });
 
+    socket.on("createGroup", async (info) => {
+        if (!info) return;
+        const newGroup = new chatModel({
+            groupName: info?.groupName,
+            members: info?.members
+        });
+        const response = await newGroup.save();
+        console.log(response)
+        userIo.to(socket.id).emit("getGroup", response);
+    });
+
+    socket.on("joinGroup", async (groupId) => {
+        socket.join(groupId);
+    });
+
     socket.on("findUserChats", async (userId) => {
         const chats = await chatModel.find({members: {$in: [userId]}});
         userIo.to(socket.id).emit("getUserChats", chats);
@@ -59,20 +74,36 @@ userIo.on("connection", (socket) => {
         let result = [];
         for (const chatsKey in chats) {
             const chat = chats[chatsKey];
-            const recipientId = chat?.members.find(id => id !== userId);
-            const user = await userModel.findById(recipientId);
-            const chatId = chat?._id;
-            const message = await messageModel
-                .find({chatId})
-                .sort({createdAt: -1})
-                .limit(1)
-                .exec();
-            const updatedUser = {
-                chat,
-                user,
-                message,
-            };
-            result = [...result, updatedUser];
+            if (chat.members.length > 2) {
+                const chatId = chat?._id;
+                const message = await messageModel
+                    .find({chatId})
+                    .sort({createdAt: -1})
+                    .limit(1)
+                    .exec();
+                const updatedUser = {
+                    chat,
+                    message,
+                };
+                result = [...result, updatedUser];
+
+            }
+            if (chat.members.length === 2) {
+                const recipientId = chat?.members.find(id => id !== userId);
+                const user = await userModel.findById(recipientId);
+                const chatId = chat?._id;
+                const message = await messageModel
+                    .find({chatId})
+                    .sort({createdAt: -1})
+                    .limit(1)
+                    .exec();
+                const updatedUser = {
+                    chat,
+                    user,
+                    message,
+                };
+                result = [...result, updatedUser];
+            }
         }
         userIo.to(socket.id).emit("getRecipient", result);
     });
@@ -108,16 +139,26 @@ userIo.on("connection", (socket) => {
         userIo.emit("getOnlineUsers", onlineUsers);
     });
 
-    socket.on("sendMessage", (message) => {
-        const user = onlineUsers.find(user => user.userId === message.recipientId);
-        if (!user) return;
-        userIo.to(user.socketId).emit("getMessage", message);
-        userIo.to(user.socketId).emit("getNotification", {
-            _id: Date.now(),
-            senderId: message.senderId,
-            isRead: false,
-            date: new Date(),
-        });
+    socket.on("sendMessage", (message, groupId) => {
+        if (!groupId) {
+            const user = onlineUsers.find(user => user.userId === message.recipientId);
+            if (!user) return;
+            userIo.to(user.socketId).emit("getMessage", message);
+            userIo.to(user.socketId).emit("getNotification", {
+                _id: Date.now(),
+                senderId: message.senderId,
+                isRead: false,
+                date: new Date(),
+            });
+        } else {
+            userIo.to(groupId).emit("getMessage", message);
+            userIo.to(groupId).emit("getNotification", {
+                _id: Date.now(),
+                senderId: message.senderId,
+                isRead: false,
+                date: new Date(),
+            });
+        }
     });
 
     socket.on("disconnect", () => {

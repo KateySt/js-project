@@ -6,7 +6,6 @@ import {
     selectJwt,
     selectUser,
     selectUsers,
-    selectUsersOnline,
     setRecipient,
     setUsersAsync,
     setUsersOnlineAsync
@@ -77,7 +76,7 @@ function useChat() {
 
     const updateCurrentChat = useCallback(async (chat) => {
         setCurrentChat(chat.chat);
-        await dispatch(setRecipient(chat.user));
+        await dispatch(setRecipient(chat?.user ? chat?.user : chat.chat?.groupName));
     }, []);
 
     const sendTextMessage = useCallback(async (textMessage, sender, currentChatId, setTextMessage) => {

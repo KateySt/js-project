@@ -36,14 +36,14 @@ function useUser() {
     }, []);
 
     useEffect(() => {
-        if (!token) return
+        if (!token) return;
         localStorage.setItem("jwt", JSON.stringify(token));
         dispatch(foundUserAsync(jwt(token)._id));
     }, [token]);
 
     useEffect(() => {
         dispatch(setUserAsync());
-    }, []);
+    }, [token]);
 
     useEffect(() => {
         if (!userInfo) return;

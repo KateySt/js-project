@@ -120,6 +120,24 @@ body {
     border-radius: 50%;
 }
 
+/* Possibility */
+.possibility {
+    position: relative;
+}
+
+.possibility-box {
+    max-height: 50vh;
+    width: 200px;
+    position: absolute;
+    top: 2rem;
+    right: 0;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    background: #181d31;
+    color: white;
+    z-index: 5;
+}
+
 /* Notification */
 .notifications {
     position: relative;
@@ -209,4 +227,9 @@ body {
     border-radius: 50%;
     align-items: center;
     justify-content: center;
+}
+
+.scroll-list-group {
+    max-height: 200px;
+    overflow-y: auto;
 }

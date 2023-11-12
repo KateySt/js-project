@@ -153,6 +153,19 @@ export const webSocketSecureMiddleware = {
             socketSecure.off("getChat");
         }
     },
+    creatNewGroup(group) {
+        if (!socketSecure) return;
+        socketSecure.emit("createGroup", group);
+    },
+    subscribeNewGroup(callback) {
+        if (!socketSecure) return;
+        socketSecure.on("getGroup", (group) => {
+            callback(group);
+        });
+        return () => {
+            socketSecure.off("getGroup");
+        }
+    },
     findUserChats(userId) {
         if (!socketSecure) return;
         socketSecure.emit("findUserChats", userId);

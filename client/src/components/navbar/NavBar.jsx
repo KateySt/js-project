@@ -1,7 +1,8 @@
-import {Container, Nav, Navbar, Stack} from "react-bootstrap";
+import {Button, Container, Nav, Navbar, Stack} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import useUser from "../../hooks/useUser.js";
 import Notification from "../notification/Notification.jsx";
+import Possibility from "../possibility/Possibility.jsx";
 
 const NavBar = () => {
     const {userInfo, logout} = useUser();
@@ -22,6 +23,7 @@ const NavBar = () => {
 
                             {userInfo && <>
                                 <Notification/>
+                                <Possibility/>
                                 <Link
                                     onClick={logout}
                                     to="/login"

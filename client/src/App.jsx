@@ -5,10 +5,11 @@ import Register from "./pages/register/Register.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {Container} from "react-bootstrap";
 import NavBar from "./components/navbar/NavBar.jsx";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {selectJwt, selectUser} from "./features/user/UserSlice.js";
 import {useEffect} from "react";
 import {webSocketMiddleware, webSocketSecureMiddleware} from "./socket/chatAPI.js";
+import Group from "./pages/group/Group.jsx";
 
 function App() {
     const userInfo = useSelector(selectUser);
@@ -35,6 +36,7 @@ function App() {
             <Container>
                 <Routes>
                     <Route path="/" element={userInfo ? <Chat/> : <Login/>}/>
+                    <Route path="/group" element={userInfo ? <Group/> : <Login/>}/>
                     <Route path="/login" element={userInfo ? <Chat/> : <Login/>}/>
                     <Route path="/register" element={userInfo ? <Chat/> : <Register/>}/>
                     <Route path="*" element={<Navigate to="/"/>}/>

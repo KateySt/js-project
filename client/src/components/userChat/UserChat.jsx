@@ -11,7 +11,6 @@ const UserChat = ({data}) => {
         markThisNotificationAsRead,
         notifications,
     } = useUserChat(data);
-
     return (
         <Stack
             direction="horizontal"
@@ -29,7 +28,7 @@ const UserChat = ({data}) => {
                     <img src={avatar} height="35px" alt="avatar"/>
                 </div>
                 <div className="text-content">
-                    <div className="name">{data.user?.name}</div>
+                    <div className="name">{data.chat?.groupName ? data.chat?.groupName : data.user?.name}</div>
                     <div className="text">
                         {data.message[0]?.text &&
                             (<span>{truncateText(data.message[0]?.text)}</span>)
