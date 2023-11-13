@@ -55,6 +55,10 @@ export const webSocketSecureMiddleware = {
             socketSecure.disconnect();
         }
     },
+    updateUser(user) {
+        if (!socketSecure) return;
+        socketSecure.emit("update", user);
+    },
     addNewUserOnline(user) {
         if (!socketSecure) return;
         socketSecure.emit("addNewUser", user);
@@ -107,7 +111,7 @@ export const webSocketSecureMiddleware = {
             socketSecure.off("getCreatedMessage");
         }
     },
-    sendNewMessage(message,groupId) {
+    sendNewMessage(message, groupId) {
         if (!socketSecure) return;
         socketSecure.emit("sendMessage", message, groupId);
     },

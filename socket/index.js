@@ -159,6 +159,14 @@ userIo.on("connection", (socket) => {
         }
     });
 
+    socket.on("update", async (user) => {
+        const result = await userModel.updateOne(
+            { _id: user._id },
+            { $set: user }
+        );
+        io.to(socket.id).emit("getUser", result);
+    });
+
     socket.on("disconnect", () => {
         onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
         userIo.emit("getOnlineUsers", onlineUsers);

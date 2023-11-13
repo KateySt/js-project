@@ -1,4 +1,4 @@
-import {Button, Container, Nav, Navbar, Stack} from "react-bootstrap";
+import {Container, Nav, Navbar, Stack} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import useUser from "../../hooks/useUser.js";
 import Notification from "../notification/Notification.jsx";

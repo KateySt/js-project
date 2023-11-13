@@ -62,6 +62,9 @@ export const getTokenAsync = () => (dispatch) => {
 export const foundUserAsync = (element) => () => {
     webSocketMiddleware.findUser(element);
 }
+export const updateUserAsync = (element) => () => {
+    webSocketSecureMiddleware.updateUser(element);
+}
 export const setUserAsync = () => (dispatch) => {
     webSocketMiddleware.subscribeUser((user) => dispatch(setUser(user)));
 }
