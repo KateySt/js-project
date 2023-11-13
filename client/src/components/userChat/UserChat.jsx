@@ -38,7 +38,7 @@ const UserChat = ({data}) => {
             </div>
             <div className="d-flex flex-column align-items-end">
                 <div className="date">
-                    {data.message.length !== 0 ? moment(data.message[0]?.createdAt).calendar() : ''}
+                    {data.message[0].length !== 0 ? moment(data.message[0]?.createdAt).calendar() : ''}
                 </div>
                 <div
                     className={thisUserNotifications?.length > 0 ?

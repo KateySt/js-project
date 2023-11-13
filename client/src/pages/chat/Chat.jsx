@@ -3,8 +3,9 @@ import {Container, Stack} from "react-bootstrap";
 import UserChat from "../../components/userChat/UserChat.jsx";
 import PotentialChat from "../../components/potentialChat/PotentialChat.jsx";
 import ChatBox from "../../components/chatbox/ChatBox.jsx";
-import {useSelector} from "react-redux";
-import {selectRecipients} from "../../features/user/UserSlice.js";
+import {useDispatch, useSelector} from "react-redux";
+import {getRecipientsAsync, selectRecipients} from "../../features/user/UserSlice.js";
+import {useEffect} from "react";
 
 const Chat = () => {
     const {
@@ -16,6 +17,12 @@ const Chat = () => {
         potentialChat,
     } = useChat();
     const recipients = useSelector(selectRecipients);
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(getRecipientsAsync());
+    }, []);
+
     return (
         <Container>
             <PotentialChat creatChat={creatChat} potentialChat={potentialChat}/>

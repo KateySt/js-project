@@ -21,6 +21,45 @@ let onlineUsers = [];
 const createToken = (_id) => {
     return jwt.sign({_id}, JWT_KEY, {expiresIn: "3d"});
 }
+
+async function recipient(userId) {
+    const chats = await chatModel.find({members: {$in: [userId]}});
+    let result = [];
+    for (const chatsKey in chats) {
+        const chat = chats[chatsKey];
+        if (chat?.groupName) {
+            const chatId = chat?._id;
+            const message = await messageModel
+                .find({chatId})
+                .sort({createdAt: -1})
+                .limit(1)
+                .exec();
+            const updatedUser = {
+                chat,
+                message,
+            };
+            result = [...result, updatedUser];
+        }
+        if (!chat?.groupName) {
+            const recipientId = chat?.members.find(id => id !== userId);
+            const user = await userModel.findById(recipientId);
+            const chatId = chat?._id;
+            const message = await messageModel
+                .find({chatId})
+                .sort({createdAt: -1})
+                .limit(1)
+                .exec();
+            const updatedUser = {
+                chat,
+                user,
+                message,
+            };
+            result = [...result, updatedUser];
+        }
+    }
+    return result;
+}
+
 userIo.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
     if (token) {
@@ -66,40 +105,7 @@ userIo.on("connection", (socket) => {
     });
 
     socket.on("findRecipient", async (userId) => {
-        const chats = await chatModel.find({members: {$in: [userId]}});
-        let result = [];
-        for (const chatsKey in chats) {
-            const chat = chats[chatsKey];
-            if (chat?.groupName) {
-                const chatId = chat?._id;
-                const message = await messageModel
-                    .find({chatId})
-                    .sort({createdAt: -1})
-                    .limit(1)
-                    .exec();
-                const updatedUser = {
-                    chat,
-                    message,
-                };
-                result = [...result, updatedUser];
-            }
-            if (!chat?.groupName) {
-                const recipientId = chat?.members.find(id => id !== userId);
-                const user = await userModel.findById(recipientId);
-                const chatId = chat?._id;
-                const message = await messageModel
-                    .find({chatId})
-                    .sort({createdAt: -1})
-                    .limit(1)
-                    .exec();
-                const updatedUser = {
-                    chat,
-                    user,
-                    message,
-                };
-                result = [...result, updatedUser];
-            }
-        }
+        let result = await recipient(userId);
         userIo.to(socket.id).emit("getRecipient", result);
     });
 
@@ -161,9 +167,13 @@ userIo.on("connection", (socket) => {
 
     socket.on("update", async (user) => {
         const result = await userModel.updateOne(
-            { _id: user._id },
-            { $set: user }
+            {_id: user._id},
+            {$set: user}
         );
+        for (const onlineUser of onlineUsers) {
+            let resultRecipient = await recipient(onlineUser.userId);
+            userIo.to(onlineUser.socketId).emit("getRecipient", resultRecipient);
+        }
         io.to(socket.id).emit("getUser", result);
     });
 
