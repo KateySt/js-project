@@ -1,0 +1,49 @@
+.round-avatar {
+    border-radius: 50%;
+    font-size: 12px;
+    line-height: 25px;
+}
+
+.user-online {
+    display: inline-block;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background: rgb(0, 219, 0);
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    z-index: 2;
+}
+
+.this-user-notifications {
+    display: flex;
+    background: #00bd9b;
+    height: 20px;
+    width: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+}
+
+.text, .date {
+    font-size: 14px;
+    color: rgb(180, 180, 180);
+}
+
+.name {
+    font-weight: 700;
+}
+
+.text-content {
+    width: 170px;
+}
+
+.user-card {
+    color: white;
+    position: relative;
+    border-bottom: 1px solid rgb(100, 100, 100);
+    width: 380px;
+}

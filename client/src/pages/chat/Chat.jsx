@@ -6,6 +6,7 @@ import ChatBox from "../../components/chatbox/ChatBox.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import {getRecipientsAsync, selectRecipients} from "../../features/user/UserSlice.js";
 import {useEffect} from "react";
+import './chat.css';
 
 const Chat = () => {
     const {

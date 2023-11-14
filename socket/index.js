@@ -140,7 +140,7 @@ userIo.on("connection", (socket) => {
         userIo.emit("getOnlineUsers", onlineUsers);
     });
 
-    socket.on("sendMessage", (message, groupId) => {
+    socket.on("sendMessage", async (message, groupId) => {
         if (!groupId) {
             const user = onlineUsers.find(user => user.userId === message.recipientId);
             if (!user) return;
@@ -163,6 +163,12 @@ userIo.on("connection", (socket) => {
                 date: new Date(),
             });
         }
+        for (const onlineUser of onlineUsers) {
+            const chat = await chatModel.findOne({members: {$all: [onlineUser.userId, message.senderId]}});
+            if (!chat) continue;
+            let resultRecipient = await recipient(onlineUser.userId);
+            userIo.to(onlineUser.socketId).emit("getRecipient", resultRecipient);
+        }
     });
 
     socket.on("update", async (user) => {
@@ -171,6 +177,8 @@ userIo.on("connection", (socket) => {
             {$set: user}
         );
         for (const onlineUser of onlineUsers) {
+            const chat = await chatModel.findOne({members: {$all: [onlineUser.userId, user._id]}});
+            if (!chat) continue;
             let resultRecipient = await recipient(onlineUser.userId);
             userIo.to(onlineUser.socketId).emit("getRecipient", resultRecipient);
         }

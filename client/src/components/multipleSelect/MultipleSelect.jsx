@@ -2,8 +2,9 @@ import {useSelector} from "react-redux";
 import {selectUsers} from "../../features/user/UserSlice.js";
 import {useEffect, useState} from "react";
 import ItemSelect from "./item/ItemSelect.jsx";
+import './multipleSelect.css';
 
-const MultipleSelect = ({setGroup,group}) => {
+const MultipleSelect = ({setGroup, group}) => {
     const users = useSelector(selectUsers);
     const [selectedUser, setSelectedUser] = useState(null);
 

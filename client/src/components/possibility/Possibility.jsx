@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 import {AiOutlinePlusCircle} from "react-icons/ai";
 import {RxUpdate} from "react-icons/rx";
 import UpdateUser from "../updateUser/UpdateUser.jsx";
+import './possibility.css';
 
 const Possibility = () => {
     const [isOpen, setIsOpen] = useState(false);

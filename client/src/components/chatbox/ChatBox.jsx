@@ -6,6 +6,7 @@ import {Stack} from "react-bootstrap";
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
 import {selectMessages} from "../../features/message/MessageSlice.js";
+import './chatBox.css';
 
 const ChatBox = ({data, isLoading, send}) => {
     const user = useSelector(selectUser);

@@ -33,9 +33,9 @@ const UpdateUser = ({show, handleClose}) => {
                             />
                         </Form.Group>
                         <Form.Group controlId="formPassword">
-                            <Form.Label>Avater</Form.Label>
+                            <Form.Label>Avatar</Form.Label>
                             <Form.Control
-                                placeholder="avater"
+                                placeholder="avatar"
                                 value={avatar}
                                 onChange={(e) => setAvatar(e.target.value)}
                             />

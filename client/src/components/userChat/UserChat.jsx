@@ -1,7 +1,8 @@
 import {Stack} from "react-bootstrap";
-import avatar from "../../assets/undraw_profile_pic_re_iwgo.svg";
 import moment from "moment";
 import useUserChat from "../../hooks/useUserChat.js";
+import Avatar from 'react-avatar';
+import './userChat.css';
 
 const UserChat = ({data}) => {
     const {
@@ -25,10 +26,17 @@ const UserChat = ({data}) => {
         >
             <div className="d-flex">
                 <div className="me-2">
-                    <img src={avatar} height="35px" alt="avatar"/>
+                    <Avatar
+                        name={data.chat?.groupName ? data.chat?.groupName : data.user?.name}
+                        maxInitials={1}
+                        size="50"
+                        className="round-avatar"
+                        alt="avatar"/>
                 </div>
                 <div className="text-content">
-                    <div className="name">{data.chat?.groupName ? data.chat?.groupName : data.user?.name}</div>
+                    <div className="name">
+                        {data.chat?.groupName ? data.chat?.groupName : data.user?.name}
+                    </div>
                     <div className="text">
                         {data.message[0]?.text &&
                             (<span>{truncateText(data.message[0]?.text)}</span>)
@@ -38,7 +46,7 @@ const UserChat = ({data}) => {
             </div>
             <div className="d-flex flex-column align-items-end">
                 <div className="date">
-                    {data.message[0].length !== 0 ? moment(data.message[0]?.createdAt).calendar() : ''}
+                    {data.message.length !== 0 ? moment(data.message[0]?.createdAt).calendar() : ''}
                 </div>
                 <div
                     className={thisUserNotifications?.length > 0 ?

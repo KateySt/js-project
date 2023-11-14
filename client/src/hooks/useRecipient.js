@@ -16,11 +16,8 @@ export const useRecipient = () => {
     useEffect(() => {
         if (user == null) return;
         dispatch(setRecipientsAsync(user?._id));
-    }, [user]);
-
-    useEffect(() => {
         dispatch(getRecipientsAsync());
-    }, [chatsInfo, message, notification, group]);
+    }, [user, chatsInfo, message, notification, group]);
 
     return {
         recipients

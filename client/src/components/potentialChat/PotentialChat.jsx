@@ -1,6 +1,6 @@
 import {useSelector} from "react-redux";
 import {selectUser, selectUsersOnline} from "../../features/user/UserSlice.js";
-
+import './potentialChat.css';
 const PotentialChat = ({creatChat, potentialChat}) => {
     const user = useSelector(selectUser);
     const onlineUsers = useSelector(selectUsersOnline);
