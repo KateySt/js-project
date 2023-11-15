@@ -72,6 +72,19 @@ export const webSocketSecureMiddleware = {
             socketSecure.off("getOnlineUsers");
         }
     },
+    findUsersFromChat(user) {
+        if (!socketSecure) return;
+        socketSecure.emit("findUsersChat", user);
+    },
+    getUsersFromChat(callback) {
+        if (!socketSecure) return;
+        socketSecure.on("getUsersChat", (res) => {
+            callback(res);
+        });
+        return () => {
+            socketSecure.off("getUsersChat");
+        }
+    },
     findUsersRecipient(userId) {
         if (!socketSecure) return;
         socketSecure.emit("findRecipient", userId);

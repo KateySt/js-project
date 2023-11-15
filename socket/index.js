@@ -102,6 +102,19 @@ userIo.on("connection", (socket) => {
         userIo.to(socket.id).emit("getGroup", response);
     });
 
+    socket.on("findUsersChat", async (chatId) => {
+        if (!chatId) return;
+        const chat = await chatModel.findById(chatId);
+        let users = [];
+        for (const memberId of chat.members) {
+            const user = await userModel.findById(memberId);
+            if (user) {
+                users.push(user);
+            }
+        }
+        userIo.to(socket.id).emit("getUsersChat", users);
+    });
+
     socket.on("findUserChats", async (userId) => {
         const chats = await chatModel.find({members: {$in: [userId]}});
         userIo.to(socket.id).emit("getUserChats", chats);

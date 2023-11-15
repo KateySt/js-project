@@ -7,6 +7,8 @@ import moment from "moment";
 import InputEmoji from "react-input-emoji";
 import {selectMessages} from "../../features/message/MessageSlice.js";
 import './chatBox.css';
+import GroupInfoModal from "../groupInfoModal/GroupInfoModal.jsx";
+import {RxTextAlignJustify} from "react-icons/rx";
 
 const ChatBox = ({data, isLoading, send}) => {
     const user = useSelector(selectUser);
@@ -15,7 +17,9 @@ const ChatBox = ({data, isLoading, send}) => {
     const [textMessage, setTextMessage] = useState();
     const messages = useSelector(selectMessages);
     const scroll = useRef();
-
+    const [showModal, setShowModal] = useState(false);
+    const handleShowModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
     useEffect(() => {
         scroll.current?.scrollIntoView({
             behavior: "smooth"
@@ -30,10 +34,23 @@ const ChatBox = ({data, isLoading, send}) => {
     }
     return (
         <Stack gap={4} className="chat-box">
-            <div className="chat-header">
-                <strong>
+            <div className="chat-header d-flex align-items-center justify-content-between px-3">
+                <strong className="text-center flex-grow-1">
                     {recipient?.name ? recipient?.name : recipient?.groupName}
                 </strong>
+                <div onClick={handleShowModal}>
+                    <RxTextAlignJustify />
+                </div>
+                <>
+                    {showModal &&
+                        <GroupInfoModal
+                            currentChat={data}
+                            handleClose={handleCloseModal}
+                            groupInfo={recipient}
+                            show={showModal}
+                        />
+                    }
+                </>
             </div>
             <Stack gap={3} className="messages">
                 {messages &&

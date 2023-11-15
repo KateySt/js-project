@@ -106,17 +106,7 @@ function useChat() {
 
     useEffect(() => {
         dispatch(setUsersAsync());
-        const pChats = users.filter((u) => {
-            let isChatCreated = false;
-            if (user._id === u._id) return false;
-            if (chatsInfo) {
-                isChatCreated = chatsInfo?.some(chat => {
-                    return chat.members[0] === u._id ||
-                        chat.members[1] === u._id;
-                })
-            }
-            return !isChatCreated;
-        });
+        const pChats = users.filter((u) => u?._id !== user?._id);
         setPotentialChat(pChats);
     }, [chatsInfo, users]);
 
