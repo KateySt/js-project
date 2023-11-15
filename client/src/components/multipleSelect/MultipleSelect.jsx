@@ -20,7 +20,7 @@ const MultipleSelect = ({setGroup, group}) => {
     return (
         <>
             {users?.length !== 0 && (
-                <ul className="list-group scroll-list-group">
+                <ul className="list-group scroll-list-group mt-2">
                     {users?.map((value, index) => (
                         <ItemSelect
                             key={index}

@@ -90,9 +90,12 @@ userIo.on("connection", (socket) => {
 
     socket.on("createGroup", async (info) => {
         if (!info) return;
+        if (!info?.groupName) return;
+        if (info?.avatar !== '' && !validator.isURL(info?.avatar)) return;
         const newGroup = new chatModel({
             groupName: info?.groupName,
-            members: info?.members
+            members: info?.members,
+            avatar: info?.avatar,
         });
         const response = await newGroup.save();
         console.log(response)
@@ -172,6 +175,8 @@ userIo.on("connection", (socket) => {
     });
 
     socket.on("update", async (user) => {
+        if (name.length < 3) return;
+        if ((!validator.isURL(user?.avatar)) || !user?.avatar) return;
         const result = await userModel.updateOne(
             {_id: user._id},
             {$set: user}
@@ -201,6 +206,7 @@ io.on("connection", (socket) => {
         let user = await userModel.findOne({email});
         if (user)
             return;
+        if (name.length < 3) return;
         if (!validator.isEmail(email))
             return;
         if (!validator.isStrongPassword(password))

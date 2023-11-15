@@ -5,12 +5,14 @@ import {useSelector} from "react-redux";
 import {selectNotifications} from "../../features/message/MessageSlice.js";
 import {useState} from "react";
 import './notification.css';
+
 const Notification = () => {
     const [isOpen, setIsOpen] = useState(false);
     const {chatsInfo, users, user, markAllNotificationAsRead, markNotificationAsRead} = useChat();
     const notifications = useSelector(selectNotifications);
-    const unreadNotifications = unreadNotificationsFun(notifications.filter(n => (n.senderId !== user?._id)));
-    const modifiedNotifications = notifications?.filter(n => (n.senderId !== user?._id)).map(n => {
+    const yourNotifications = notifications?.filter(n => (n.senderId !== user?._id));
+    const unreadNotifications = unreadNotificationsFun(yourNotifications);
+    const modifiedNotifications = yourNotifications.map(n => {
         const sender = users.find(user => user._id === n.senderId);
         return {
             ...n[0],

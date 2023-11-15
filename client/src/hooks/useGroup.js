@@ -7,15 +7,18 @@ export const useGroup = () => {
     const user = useSelector(selectUser);
     const [selectedUsers, setSelectedUsers] = useState([user?._id]);
     const dispatch = useDispatch();
-    const [groupName, setGroupName] = useState(null);
+    const [groupName, setGroupName] = useState('');
+    const [groupAvatar, setGroupAvatar] = useState('');
 
     const creatGroup = useCallback(async () => {
         if (!groupName) return;
         await dispatch(createGroupAsync({
+            avatar: groupAvatar,
             groupName: groupName,
             members: selectedUsers,
         }));
-        setGroupName(null);
+        setGroupName('');
+        setGroupAvatar('');
         setSelectedUsers([user?._id]);
         await dispatch(getGroupAsync());
     }, [selectedUsers]);
@@ -25,5 +28,8 @@ export const useGroup = () => {
         selectedUsers,
         setSelectedUsers,
         setGroupName,
+        setGroupAvatar,
+        groupName,
+        groupAvatar,
     };
 }

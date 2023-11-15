@@ -31,6 +31,7 @@ const UserChat = ({data}) => {
                         maxInitials={1}
                         size="50"
                         className="round-avatar"
+                        src={data.chat?.avatar || data.user?.avatar}
                         alt="avatar"/>
                 </div>
                 <div className="text-content">
