@@ -8,21 +8,21 @@ const GroupInfoModal = ({show, handleClose, groupInfo, currentChat}) => {
 
     return (
         <Modal show={show} onHide={handleClose} centered>
-            <Modal.Header closeButton style={{backgroundColor: '#181d31'}}>
+            <Modal.Header style={{backgroundColor: 'rgb(40, 40, 40)'}}>
                 <Modal.Title>Group Information</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{backgroundColor: '#181d31'}}>
+            <Modal.Body style={{backgroundColor: 'rgb(40, 40, 40)'}}>
                 <div className="mb-3">
                     <h5>Group Name: {groupInfo.name || groupInfo?.groupName}</h5>
                 </div>
                 <h5>Members:</h5>
                 <ListGroup className='list-group scroll-list-group'>
                     {members.map((member, index) => (
-                        <GroupMembers key={index} member={member}/>
+                        <GroupMembers  key={index} member={member}/>
                     ))}
                 </ListGroup>
             </Modal.Body>
-            <Modal.Footer style={{backgroundColor: '#181d31'}}>
+            <Modal.Footer style={{backgroundColor: 'rgb(40, 40, 40)'}}>
                 <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>

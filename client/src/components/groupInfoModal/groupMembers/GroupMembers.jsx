@@ -4,7 +4,10 @@ import Avatar from "react-avatar";
 const GroupMembers = ({member}) => {
     return (
         <>
-            <ListGroup.Item key={member?._id} className="d-flex align-items-center">
+            <ListGroup.Item
+                key={member?._id}
+                className="d-flex align-items-center"
+            >
                 <Avatar
                     name={member?.name}
                     maxInitials={1}

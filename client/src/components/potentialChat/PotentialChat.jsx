@@ -1,36 +1,17 @@
-import {useSelector} from "react-redux";
-import {selectUser, selectUsersOnline} from "../../features/user/UserSlice.js";
 import './potentialChat.css';
-import {useEffect, useState} from "react";
 import {Form, ListGroup} from 'react-bootstrap';
 import Avatar from "react-avatar";
+import {usePotentialChat} from "../../hooks/usePotentialChat.js";
 
 const PotentialChat = ({creatChat, potentialChat}) => {
-    const user = useSelector(selectUser);
-    const onlineUsers = useSelector(selectUsersOnline);
-    const [query, setQuery] = useState('');
-    const [filteredSuggestions, setFilteredSuggestions] = useState([]);
-    const [showSuggestions, setShowSuggestions] = useState(false);
-
-    useEffect(() => {
-        if (!potentialChat) return;
-        setFilteredSuggestions(
-            potentialChat.filter((user) =>
-                user.name.toLowerCase().includes(query.toLowerCase())
-            )
-        );
-    }, [query, potentialChat]);
-
-    const handleInputChange = (event) => {
-        setQuery(event.target.value);
-        setShowSuggestions(true);
-    };
-
-    const handleSuggestionClick = (selectedUser) => {
-        setQuery(selectedUser.name);
-        setShowSuggestions(false);
-        creatChat(selectedUser._id, user._id);
-    };
+    const {
+        filteredSuggestions,
+        handleSuggestionClick,
+        handleInputChange,
+        showSuggestions,
+        onlineUsers,
+        query,
+    } = usePotentialChat(potentialChat, creatChat);
 
     return (
         <>
@@ -40,7 +21,7 @@ const PotentialChat = ({creatChat, potentialChat}) => {
                     value={query}
                     onChange={handleInputChange}
                     placeholder="Search users..."
-                    style={{ width: '380px'}}
+                    style={{width: '330px'}}
                 />
                 {showSuggestions && (
                     <ListGroup

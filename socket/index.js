@@ -62,14 +62,32 @@ async function recipient(userId) {
 
 userIo.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
-    if (token) {
+    if (!token) {
+        return next(new Error("403 unauthorized"));
+    }
+    try {
         const decoded = jwt.verify(token, JWT_KEY);
         const user = await userModel.findById(decoded?._id);
-        if (!user) next(new Error("403 unauthorized\n do not find this user"));
+        if (!user) return next(new Error("403 unauthorized\n do not find this user"));
+        if (user) {
+            const userId = user._id.toString();
+            const groups = await chatModel.find({
+                members: {$in: [userId]},
+                groupName: {$exists: true}
+            });
+            for (const group of groups) {
+                socket.join(group?._id.toString());
+            }
+        }
         next();
-    } else {
-        next(new Error("403 unauthorized"));
+    } catch (error) {
+        if (error instanceof jwt.TokenExpiredError) {
+            return next(new Error("401 unauthorized\n token expired"));
+        } else {
+            return next(new Error("403 unauthorized\n invalid token"));
+        }
     }
+
 });
 userIo.on("connection", (socket) => {
     console.log("====> new connection", socket.id)
@@ -98,7 +116,6 @@ userIo.on("connection", (socket) => {
             avatar: info?.avatar,
         });
         const response = await newGroup.save();
-        console.log(response)
         userIo.to(socket.id).emit("getGroup", response);
     });
 
@@ -169,7 +186,6 @@ userIo.on("connection", (socket) => {
                 date: new Date(),
             });
         } else {
-            socket.join(groupId);
             userIo.to(groupId).emit("getMessage", message);
             userIo.to(groupId).emit("getNotification", {
                 _id: Date.now(),

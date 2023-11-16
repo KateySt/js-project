@@ -30,7 +30,7 @@
 
 .message.self {
     color: white;
-    background: #00bd9b;
+    background: #8603a5;
 }
 
 .message-footer {
@@ -47,7 +47,7 @@
 
 .send-btn {
     border: none;
-    background: rgba(72, 112, 223, 1);
+    background: rgb(134, 3, 165);
     color: white;
     height: 40px;
     width: 40px;

@@ -4,19 +4,22 @@ import useUserChat from "../../hooks/useUserChat.js";
 import Avatar from 'react-avatar';
 import './userChat.css';
 
-const UserChat = ({data}) => {
+const UserChat = ({data, showAvatarOnly}) => {
     const {
         truncateText,
         isOnline,
         thisUserNotifications,
         markThisNotificationAsRead,
-        notifications,
+        notifications
     } = useUserChat(data);
+
     return (
         <Stack
             direction="horizontal"
             gap={3}
-            className="user-card align-items-center p-2 justify-content-between"
+            className={`user-card align-items-center p-2 justify-content-between ${
+                showAvatarOnly ? 'avatar-only' : ''
+            }`}
             role="button"
             onClick={() => {
                 if (thisUserNotifications?.length !== 0) {
@@ -24,46 +27,67 @@ const UserChat = ({data}) => {
                 }
             }}
         >
-            <div className="d-flex">
-                <div className="me-2">
-                    <Avatar
-                        name={data.chat?.groupName ? data.chat?.groupName : data.user?.name}
-                        maxInitials={1}
-                        size="50"
-                        className="round-avatar"
-                        src={data.chat?.avatar || data.user?.avatar}
-                        alt="avatar"/>
-                </div>
-                <div className="text-content">
-                    <div className="name">
-                        {data.chat?.groupName ? data.chat?.groupName : data.user?.name}
+            {showAvatarOnly ? (
+                <>
+                    <div className="d-flex ms-auto relative-avatar">
+                        <Avatar
+                            name={data.chat?.groupName ? data.chat?.groupName : data.user?.name}
+                            maxInitials={1}
+                            size="50"
+                            className="round-avatar"
+                            src={data.chat?.avatar || data.user?.avatar}
+                            alt="avatar"
+                        />
+                        {isOnline && <span className="user-online"></span>}
+                        {thisUserNotifications?.length > 0 && (
+                            <div className="this-user-notifications">
+                                {thisUserNotifications?.length}
+                            </div>
+                        )}
                     </div>
-                    <div className="text">
-                        {data.message[0]?.text &&
-                            (<span>{truncateText(data.message[0]?.text)}</span>)
-                        }
+                </>
+            ) : (
+                <>
+                    <div className="d-flex">
+                        <div className="ms-auto relative-avatar me-3">
+                            <Avatar
+                                name={data.chat?.groupName ? data.chat?.groupName : data.user?.name}
+                                maxInitials={1}
+                                size="50"
+                                className="round-avatar"
+                                src={data.chat?.avatar || data.user?.avatar}
+                                alt="avatar"
+                            />
+                            {isOnline && <span className="user-online"></span>}
+                            {thisUserNotifications?.length > 0 && (
+                                <div className="this-user-notifications">
+                                    {thisUserNotifications?.length}
+                                </div>
+                            )}
+                        </div>
+                        <div className=" text-content">
+                            <div className="name">
+                                {data.chat?.groupName ? data.chat?.groupName : data.user?.name}
+                            </div>
+                            <div className="text">
+                                {data.message[0]?.text && (
+                                    <span>{truncateText(data.message[0]?.text)}</span>
+                                )}
+                            </div>
+                        </div>
+
                     </div>
-                </div>
-            </div>
-            <div className="d-flex flex-column align-items-end">
-                <div className="date">
-                    {data.message.length !== 0 ? moment(data.message[0]?.createdAt).calendar() : ''}
-                </div>
-                <div
-                    className={thisUserNotifications?.length > 0 ?
-                        "this-user-notifications"
-                        : ""
-                    }
-                >
-                    {thisUserNotifications?.length > 0 ?
-                        thisUserNotifications?.length
-                        : ""
-                    }
-                </div>
-                <span className={isOnline ? "user-online" : ""}></span>
-            </div>
+                    <div className="d-flex flex-column align-items-end">
+                        <div className="date">
+                            {data.message.length !== 0
+                                ? moment(data.message[0]?.createdAt).calendar()
+                                : ''}
+                        </div>
+                    </div>
+                </>
+            )}
         </Stack>
     );
-}
+};
 
 export default UserChat;
