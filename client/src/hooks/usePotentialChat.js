@@ -11,11 +11,14 @@ export const usePotentialChat = (potentialChat, creatChat) => {
 
     useEffect(() => {
         if (!potentialChat) return;
-        setFilteredSuggestions(
-            potentialChat.filter((user) =>
-                user.name.toLowerCase().includes(query.toLowerCase())
-            ).slice(0, 5)
-        );
+        const timeoutId = setTimeout(() => {
+            setFilteredSuggestions(
+                potentialChat.filter((user) =>
+                    user.name.toLowerCase().includes(query.toLowerCase())
+                ).slice(0, 5)
+            );
+        }, 500);
+        return () => clearTimeout(timeoutId);
     }, [query, potentialChat]);
 
     const handleInputChange = (event) => {

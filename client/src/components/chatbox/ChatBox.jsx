@@ -20,17 +20,15 @@ const ChatBox = ({data, isLoading, send}) => {
     const [showModal, setShowModal] = useState(false);
     const handleShowModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
+
     useEffect(() => {
         scroll.current?.scrollIntoView({
             behavior: "smooth"
         });
     }, [messages]);
 
-    if (!recipients.length || !data) {
-        return (<p style={{textAlign: "center", width: "100%"}}>No composition selected yet...</p>)
-    }
     if (isLoading) {
-        return (<p style={{textAlign: "center", width: "100%"}}>Loading ...</p>)
+        return (<div className="spinner-grow text-light" role="status"/>)
     }
     return (
         <Stack gap={4} className="chat-box">
@@ -39,7 +37,7 @@ const ChatBox = ({data, isLoading, send}) => {
                     {recipient?.name ? recipient?.name : recipient?.groupName}
                 </strong>
                 <div onClick={handleShowModal}>
-                    <RxTextAlignJustify />
+                    <RxTextAlignJustify/>
                 </div>
                 <>
                     {showModal &&
@@ -72,19 +70,26 @@ const ChatBox = ({data, isLoading, send}) => {
                     })}
             </Stack>
             <Stack direction="horizontal" gap={3} className="chat-input flex-grow-0">
-                <InputEmoji
-                    value={textMessage}
-                    onChange={setTextMessage}
-                    fontFamily="nunito"
-
-                />
-                <button className="send-btn" onClick={() => send(textMessage, user, data._id, setTextMessage)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                         className="bi bi-send-fill" viewBox="0 0 16 16">
-                        <path
-                            d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
-                    </svg>
-                </button>
+                {data &&
+                    <>
+                        <InputEmoji
+                            value={textMessage}
+                            onChange={setTextMessage}
+                            fontFamily="nunito"
+                            className="emojis-input data-theme-dark"
+                        />
+                        <button
+                            className="send-btn"
+                            onClick={() => send(textMessage, user, data._id, setTextMessage)}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 className="bi bi-send-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+                            </svg>
+                        </button>
+                    </>
+                }
             </Stack>
         </Stack>
     );

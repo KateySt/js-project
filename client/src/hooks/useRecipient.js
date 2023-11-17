@@ -14,12 +14,12 @@ export const useRecipient = () => {
     const group = useSelector(selectGroup);
 
     useEffect(() => {
-        if (user == null) return;
+        if (!user) return;
         dispatch(setRecipientsAsync(user?._id));
         dispatch(getRecipientsAsync());
     }, [user, chatsInfo, message, notification, group]);
 
     return {
-        recipients
+        recipients,
     };
 }

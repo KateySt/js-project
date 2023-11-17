@@ -1,5 +1,6 @@
 import {ListGroup} from 'react-bootstrap';
 import Avatar from "react-avatar";
+import './groupMembers.css';
 
 const GroupMembers = ({member}) => {
     return (

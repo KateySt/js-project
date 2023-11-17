@@ -4,7 +4,7 @@ import useUserChat from "../../hooks/useUserChat.js";
 import Avatar from 'react-avatar';
 import './userChat.css';
 
-const UserChat = ({data, showAvatarOnly}) => {
+const UserChat = ({data, showAvatarOnly, isLoading}) => {
     const {
         truncateText,
         isOnline,
@@ -27,6 +27,9 @@ const UserChat = ({data, showAvatarOnly}) => {
                 }
             }}
         >
+            {isLoading &&
+                <div className="spinner-grow text-light" role="status"/>
+            }
             {showAvatarOnly ? (
                 <>
                     <div className="d-flex ms-auto relative-avatar">
@@ -80,7 +83,7 @@ const UserChat = ({data, showAvatarOnly}) => {
                     <div className="d-flex flex-column align-items-end">
                         <div className="date">
                             {data.message.length !== 0
-                                ? moment(data.message[0]?.createdAt).calendar()
+                                ? moment(data.message[0]?.createdAt).format('HH:mm')
                                 : ''}
                         </div>
                     </div>

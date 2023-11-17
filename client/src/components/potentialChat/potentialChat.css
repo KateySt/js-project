@@ -24,3 +24,18 @@
     right: -3px;
     z-index: 2;
 }
+
+.input {
+    width: 330px !important;
+}
+
+.list-group {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+}
+
+.group {
+    position: relative;
+}

@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const messageModel = require("./models/messageModel");
 const chatModel = require("./models/chatModel");
 const {Error} = require("mongoose");
+const {recipient} = require("./utils/socketController");
 
 require("dotenv").config();
 
@@ -20,44 +21,6 @@ const userIo = io.of("/users");
 let onlineUsers = [];
 const createToken = (_id) => {
     return jwt.sign({_id}, JWT_KEY, {expiresIn: "3d"});
-}
-
-async function recipient(userId) {
-    const chats = await chatModel.find({members: {$in: [userId]}});
-    let result = [];
-    for (const chatsKey in chats) {
-        const chat = chats[chatsKey];
-        if (chat?.groupName) {
-            const chatId = chat?._id;
-            const message = await messageModel
-                .find({chatId})
-                .sort({createdAt: -1})
-                .limit(1)
-                .exec();
-            const updatedUser = {
-                chat,
-                message,
-            };
-            result = [...result, updatedUser];
-        }
-        if (!chat?.groupName) {
-            const recipientId = chat?.members.find(id => id !== userId);
-            const user = await userModel.findById(recipientId);
-            const chatId = chat?._id;
-            const message = await messageModel
-                .find({chatId})
-                .sort({createdAt: -1})
-                .limit(1)
-                .exec();
-            const updatedUser = {
-                chat,
-                user,
-                message,
-            };
-            result = [...result, updatedUser];
-        }
-    }
-    return result;
 }
 
 userIo.use(async (socket, next) => {
@@ -100,16 +63,16 @@ userIo.on("connection", (socket) => {
     socket.on("createChat", async (chatInfo) => {
         const {firstId, secondId} = chatInfo;
         const chat = await chatModel.findOne({members: {$all: [firstId, secondId]}});
-        if (chat) return;
+        if (chat) return new Error("404");
         const newChat = new chatModel({members: [firstId, secondId]});
         const response = await newChat.save();
         userIo.to(socket.id).emit("getChat", response);
     });
 
     socket.on("createGroup", async (info) => {
-        if (!info) return;
-        if (!info?.groupName) return;
-        if (info?.avatar !== '' && !validator.isURL(info?.avatar)) return;
+        if (!info) return new Error("404");
+        if (!info?.groupName) return new Error("404");
+        if (info?.avatar !== '' && !validator.isURL(info?.avatar)) return new Error("404");
         const newGroup = new chatModel({
             groupName: info?.groupName,
             members: info?.members,
@@ -120,7 +83,7 @@ userIo.on("connection", (socket) => {
     });
 
     socket.on("findUsersChat", async (chatId) => {
-        if (!chatId) return;
+        if (!chatId) return new Error("404");
         const chat = await chatModel.findById(chatId);
         let users = [];
         for (const memberId of chat.members) {
@@ -176,7 +139,7 @@ userIo.on("connection", (socket) => {
     socket.on("sendMessage", async (message, groupId) => {
         if (!groupId) {
             const user = onlineUsers.find(user => user.userId === message.recipientId);
-            if (!user) return;
+            if (!user) return new Error("404");
             userIo.to(user.socketId).emit("getMessage", message);
             userIo.to(user.socketId).emit("getNotification", {
                 _id: Date.now(),
@@ -204,8 +167,8 @@ userIo.on("connection", (socket) => {
     });
 
     socket.on("update", async (user) => {
-        if (name.length < 3) return;
-        if ((!validator.isURL(user?.avatar)) || !user?.avatar) return;
+        if (name.length < 3) return new Error("404");
+        if ((!validator.isURL(user?.avatar)) || !user?.avatar) return new Error("404");
         const result = await userModel.updateOne(
             {_id: user._id},
             {$set: user}
@@ -230,16 +193,12 @@ io.on("connection", (socket) => {
 
     socket.on("register", async (userInfo) => {
         const {name, email, password} = userInfo;
-        if (!name || !email || !password)
-            return;
+        if (!name || !email || !password) return new Error("404");
         let user = await userModel.findOne({email});
-        if (user)
-            return;
-        if (name.length < 3) return;
-        if (!validator.isEmail(email))
-            return;
-        if (!validator.isStrongPassword(password))
-            return;
+        if (user) return new Error("404");
+        if (name.length < 3) return new Error("404");
+        if (!validator.isEmail(email)) return new Error("404");
+        if (!validator.isStrongPassword(password)) return new Error("404");
         user = new userModel({name, email, password});
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
@@ -250,14 +209,11 @@ io.on("connection", (socket) => {
 
     socket.on("login", async (userInfo) => {
         const {email, password} = userInfo;
-        if (!email || !password)
-            return;
+        if (!email || !password) return new Error("404");
         const user = await userModel.findOne({email});
-        if (!user)
-            return;
+        if (!user) return new Error("404");
         const isValidPassword = await bcrypt.compare(password, user.password);
-        if (!isValidPassword)
-            return;
+        if (!isValidPassword) return new Error("404");
         const token = createToken(user._id);
         io.to(socket.id).emit("getToken", token);
     });

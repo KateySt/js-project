@@ -1,5 +1,5 @@
 import useChat from "../../hooks/useChat.js";
-import {Button, Container, Stack} from "react-bootstrap";
+import {Container, Stack} from "react-bootstrap";
 import UserChat from "../../components/userChat/UserChat.jsx";
 import PotentialChat from "../../components/potentialChat/PotentialChat.jsx";
 import ChatBox from "../../components/chatbox/ChatBox.jsx";
@@ -18,11 +18,15 @@ const Chat = () => {
         creatChat,
         potentialChat,
     } = useChat();
-    const recipients = useSelector(selectRecipients);
 
+    const recipients = useSelector(selectRecipients);
     const dispatch = useDispatch();
+    const [isLoadingRecipients, setIsLoadingRecipients] = useState(false);
+
     useEffect(() => {
+        setIsLoadingRecipients(true);
         dispatch(getRecipientsAsync());
+        setIsLoadingRecipients(false);
     }, []);
 
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -34,9 +38,9 @@ const Chat = () => {
     return (
         <Container>
             <Container className="d-flex justify-content-start align-items-center">
-                {!isCollapsed && <PotentialChat creatChat={creatChat} potentialChat={potentialChat} />}
+                {!isCollapsed && <PotentialChat creatChat={creatChat} potentialChat={potentialChat}/>}
                 <div onClick={toggleCollapse} className="m-2">
-                    {isCollapsed ? <FaLongArrowAltRight /> : <FaLongArrowAltLeft />}
+                    {isCollapsed ? <FaLongArrowAltRight/> : <FaLongArrowAltLeft/>}
                 </div>
             </Container>
             {!chatsInfo?.length ? null : (
@@ -50,7 +54,11 @@ const Chat = () => {
                                 key={`row--  ${index}`}
                                 onClick={() => updateCurrentChat(value)}
                             >
-                                <UserChat data={value} showAvatarOnly={isCollapsed}/>
+                                <UserChat
+                                    data={value}
+                                    showAvatarOnly={isCollapsed}
+                                    isLoading={isLoadingRecipients}
+                                />
                             </div>
                         ))}
                     </Stack>

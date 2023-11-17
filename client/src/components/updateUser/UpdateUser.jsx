@@ -3,7 +3,7 @@ import {useCallback, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {selectUser, setUser, updateUserAsync} from "../../features/user/UserSlice.js";
 import validator from 'validator';
-
+import './updateUser.css';
 const UpdateUser = ({show, handleClose}) => {
     const [username, setUsername] = useState('');
     const [avatar, setAvatar] = useState('');
@@ -19,10 +19,10 @@ const UpdateUser = ({show, handleClose}) => {
     return (
         <>
             <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton style={{backgroundColor: '#181d31'}}>
+                <Modal.Header closeButton className="modal-update">
                     <Modal.Title>Update profile</Modal.Title>
                 </Modal.Header>
-                <Modal.Body style={{backgroundColor: '#181d31'}}>
+                <Modal.Body className="modal-update">
                     <Form>
                         <Form.Group controlId="formUsername">
                             <Form.Label>Name</Form.Label>
@@ -59,6 +59,7 @@ const UpdateUser = ({show, handleClose}) => {
                         </Button>
                     </Form>
                 </Modal.Body>
+                <Modal.Footer className="modal-update"/>
             </Modal>
         </>
     );

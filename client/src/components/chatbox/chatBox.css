@@ -53,3 +53,12 @@
     width: 40px;
     border-radius: 50%;
 }
+
+.emojis-input {
+    background: rgb(30, 30, 30) !important;
+    color: white  !important;
+}
+
+.react-input-emoji--button__show svg {
+    fill:  rgb(134, 3, 165) !important;
+}

@@ -15,19 +15,17 @@ const PotentialChat = ({creatChat, potentialChat}) => {
 
     return (
         <>
-            <Form.Group style={{position: 'relative'}}>
+            <Form.Group className='group'>
                 <Form.Control
                     type="text"
                     value={query}
                     onChange={handleInputChange}
                     placeholder="Search users..."
-                    style={{width: '330px'}}
+                    className="input"
                 />
                 {showSuggestions && (
                     <ListGroup
-                        className="autocomplete-suggestions"
-                        style={{position: 'absolute', top: '100%', left: 0, zIndex: 1000}}
-                    >
+                        className="autocomplete-suggestions list-group">
                         {filteredSuggestions.map((u, index) => (
                             <ListGroup.Item
                                 key={index}
