@@ -9,6 +9,7 @@ const messageModel = require("./models/messageModel");
 const chatModel = require("./models/chatModel");
 const {Error} = require("mongoose");
 const {recipient} = require("./utils/socketController");
+const fs = require('fs');
 
 require("dotenv").config();
 

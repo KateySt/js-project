@@ -72,14 +72,13 @@ function useChat() {
         await dispatch(setRecipient(chat?.user ? chat?.user : chat?.chat));
     }, []);
 
-    const sendTextMessage = useCallback(async (textMessage, sender, currentChatId, setTextMessage) => {
+    const sendTextMessage = useCallback(async (textMessage, sender, currentChatId) => {
         if (!textMessage) return console.log("Typing something...");
         await dispatch(createMessageAsync({
             chatId: currentChatId,
             senderId: sender._id,
             text: textMessage,
         }));
-        setTextMessage("");
         await dispatch(getCreatedMessageAsync());
     }, []);
 

@@ -9,6 +9,7 @@ import {selectMessages} from "../../features/message/MessageSlice.js";
 import './chatBox.css';
 import GroupInfoModal from "../groupInfoModal/GroupInfoModal.jsx";
 import {RxTextAlignJustify} from "react-icons/rx";
+import SoundRecorder from "../soundRecorder/SoundRecorder.jsx";
 
 const ChatBox = ({data, isLoading, send}) => {
     const user = useSelector(selectUser);
@@ -61,7 +62,13 @@ const ChatBox = ({data, isLoading, send}) => {
                                    }
                                    ref={scroll}
                             >
-                                <span>{message.text}</span>
+                                {message.text.startsWith('blob:') ? (
+                                    <>
+                                        <audio controls src={message.text}/>
+                                    </>
+                                ) : (
+                                    <span>{message.text}</span>
+                                )}
                                 <span className="message-footer">
                                     {moment(message.createdAt).calendar()}
                                 </span>
@@ -70,7 +77,7 @@ const ChatBox = ({data, isLoading, send}) => {
                     })}
             </Stack>
             <Stack direction="horizontal" gap={3} className="chat-input flex-grow-0">
-                {data &&
+                {(data && recipients) &&
                     <>
                         <InputEmoji
                             value={textMessage}
@@ -78,10 +85,15 @@ const ChatBox = ({data, isLoading, send}) => {
                             fontFamily="nunito"
                             className="emojis-input data-theme-dark"
                         />
+                        <SoundRecorder
+                            setText={setTextMessage}
+                        />
                         <button
                             className="send-btn"
-                            onClick={() => send(textMessage, user, data._id, setTextMessage)}
-                        >
+                            onClick={() => {
+                                send(textMessage, user, data._id);
+                                setTextMessage("");
+                            }}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  className="bi bi-send-fill" viewBox="0 0 16 16">
                                 <path

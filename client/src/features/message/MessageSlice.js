@@ -53,13 +53,13 @@ export const getMessageAsync = (currentChat) => (dispatch) => {
         dispatch(updateMessages(message));
     });
 }
-export const getNotificationAsync = (currentChat) => (dispatch,getState) => {
+export const getNotificationAsync = (currentChat) => (dispatch, getState) => {
     webSocketSecureMiddleware.subscribeNotification((res) => {
         const isChatOpen = currentChat?._id === res.chatId;
         const existingNotifications = getState().messages.notifications;
         const isNotificationExists = existingNotifications.some(notification => {
             return notification?._id === res._id
-        } );
+        });
         if (!isNotificationExists) {
             if (isChatOpen) {
                 dispatch(getNotifications({...res, isRead: true}))
