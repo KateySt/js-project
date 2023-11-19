@@ -40,16 +40,18 @@ const ChatBox = ({data, isLoading, send}) => {
                 <div onClick={handleShowModal}>
                     <RxTextAlignJustify/>
                 </div>
-                <>
-                    {showModal &&
-                        <GroupInfoModal
-                            currentChat={data}
-                            handleClose={handleCloseModal}
-                            groupInfo={recipient}
-                            show={showModal}
-                        />
-                    }
-                </>
+                {(data && recipients) &&
+                    <>
+                        {showModal &&
+                            <GroupInfoModal
+                                currentChat={data}
+                                handleClose={handleCloseModal}
+                                groupInfo={recipient}
+                                show={showModal}
+                            />
+                        }
+                    </>
+                }
             </div>
             <Stack gap={3} className="messages">
                 {messages &&

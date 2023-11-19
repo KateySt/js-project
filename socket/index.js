@@ -83,6 +83,22 @@ userIo.on("connection", (socket) => {
         userIo.to(socket.id).emit("getGroup", response);
     });
 
+    socket.on("updateGroup", async (info) => {
+        if (!info) return new Error("404");
+        const filter = {_id: info._id};
+        const update = {$set: info};
+        const updateGroup = await chatModel.updateOne(filter, update);
+        userIo.to(socket.id).emit("getGroup", info);
+        let users = [];
+        for (const memberId of info.members) {
+            const user = await userModel.findById(memberId);
+            if (user) {
+                users.push(user);
+            }
+        }
+        userIo.to(socket.id).emit("getUsersChat", users);
+    });
+
     socket.on("findUsersChat", async (chatId) => {
         if (!chatId) return new Error("404");
         const chat = await chatModel.findById(chatId);

@@ -74,11 +74,8 @@ const UserChat = ({data, showAvatarOnly, isLoading}) => {
                             </div>
                             <div className="text">
                                 {data.message[0]?.text &&
-                                    (data.message[0]?.text.startsWith('blob:') ?
-                                        <span>{"voice message"}</span>
-                                        :
                                         <span>{truncateText(data.message[0]?.text)}</span>
-                                )}
+                                }
                             </div>
                         </div>
 

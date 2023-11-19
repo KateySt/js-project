@@ -48,6 +48,9 @@ export const getChatAsync = () => (dispatch) => {
 export const createGroupAsync = (element) => () => {
     webSocketSecureMiddleware.creatNewGroup(element);
 }
+export const updateMemberInGroupAsync = (element) => () => {
+    webSocketSecureMiddleware.updateMemberInGroup(element);
+}
 export const getGroupAsync = () => (dispatch) => {
     webSocketSecureMiddleware.subscribeNewGroup((group) => {
         dispatch(setGroup(group));

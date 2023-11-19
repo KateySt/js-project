@@ -72,6 +72,10 @@ export const webSocketSecureMiddleware = {
             socketSecure.off("getOnlineUsers");
         }
     },
+    updateMemberInGroup(info) {
+        if (!socketSecure) return;
+        socketSecure.emit("updateGroup", info);
+    },
     findUsersFromChat(user) {
         if (!socketSecure) return;
         socketSecure.emit("findUsersChat", user);

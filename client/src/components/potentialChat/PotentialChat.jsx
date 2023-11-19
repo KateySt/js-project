@@ -25,7 +25,7 @@ const PotentialChat = ({creatChat, potentialChat}) => {
                 />
                 {showSuggestions && (
                     <ListGroup
-                        className="autocomplete-suggestions list-group">
+                        className="autocomplete-suggestions list-group-users">
                         {filteredSuggestions.map((u, index) => (
                             <ListGroup.Item
                                 key={index}
