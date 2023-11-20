@@ -212,6 +212,12 @@ userIo.on("connection", (socket) => {
         io.to(socket.id).emit("getUser", result);
     });
 
+    socket.on("deleteUser", async (userId) => {
+        const user = await userModel.findById(userId);
+        if (!user) return new Error("404");
+        await userModel.deleteOne({ _id: userId });
+    });
+
     socket.on("disconnect", () => {
         onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
         userIo.emit("getOnlineUsers", onlineUsers);

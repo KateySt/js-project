@@ -174,6 +174,10 @@ export const webSocketSecureMiddleware = {
             socketSecure.off("getChat");
         }
     },
+    deleteUserById(userId) {
+        if (!socketSecure) return;
+        socketSecure.emit("deleteUser", userId);
+    },
     creatNewGroup(group, user) {
         if (!socketSecure) return;
         socketSecure.emit("createGroup", group, user);
