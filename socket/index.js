@@ -87,6 +87,7 @@ userIo.on("connection", (socket) => {
         for (const onlineUser of onlineUsers) {
             const chat = await chatModel.findOne({members: {$all: [onlineUser.userId, user._id]}});
             if (!chat) continue;
+            socket.join(chat?._id);
             let resultRecipient = await recipient(onlineUser.userId);
             userIo.to(onlineUser.socketId).emit("getRecipient", resultRecipient);
         }
@@ -110,6 +111,7 @@ userIo.on("connection", (socket) => {
             const chat = await chatModel.findOne({members: {$all: [onlineUser.userId, user._id]}});
             if (!chat) continue;
             let resultRecipient = await recipient(onlineUser.userId);
+            socket.join(chat?._id);
             userIo.to(onlineUser.socketId).emit("getRecipient", resultRecipient);
         }
     });
