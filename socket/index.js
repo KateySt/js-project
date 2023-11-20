@@ -63,14 +63,17 @@ userIo.on("connection", (socket) => {
 
     socket.on("createChat", async (chatInfo) => {
         const {firstId, secondId} = chatInfo;
-        const chat = await chatModel.findOne({members: {$all: [firstId, secondId]}});
+        const chat = await chatModel.findOne({
+            members: {$all: [firstId, secondId]},
+            groupName: {$exists: false}
+        });
         if (chat) return new Error("404");
         const newChat = new chatModel({members: [firstId, secondId]});
         const response = await newChat.save();
         userIo.to(socket.id).emit("getChat", response);
     });
 
-    socket.on("createGroup", async (info) => {
+    socket.on("createGroup", async (info, user) => {
         if (!info) return new Error("404");
         if (!info?.groupName) return new Error("404");
         if (info?.avatar !== '' && !validator.isURL(info?.avatar)) return new Error("404");
@@ -81,9 +84,15 @@ userIo.on("connection", (socket) => {
         });
         const response = await newGroup.save();
         userIo.to(socket.id).emit("getGroup", response);
+        for (const onlineUser of onlineUsers) {
+            const chat = await chatModel.findOne({members: {$all: [onlineUser.userId, user._id]}});
+            if (!chat) continue;
+            let resultRecipient = await recipient(onlineUser.userId);
+            userIo.to(onlineUser.socketId).emit("getRecipient", resultRecipient);
+        }
     });
 
-    socket.on("updateGroup", async (info) => {
+    socket.on("updateGroup", async (info, user) => {
         if (!info) return new Error("404");
         const filter = {_id: info._id};
         const update = {$set: info};
@@ -97,18 +106,20 @@ userIo.on("connection", (socket) => {
             }
         }
         userIo.to(socket.id).emit("getUsersChat", users);
+        for (const onlineUser of onlineUsers) {
+            const chat = await chatModel.findOne({members: {$all: [onlineUser.userId, user._id]}});
+            if (!chat) continue;
+            let resultRecipient = await recipient(onlineUser.userId);
+            userIo.to(onlineUser.socketId).emit("getRecipient", resultRecipient);
+        }
     });
 
     socket.on("findUsersChat", async (chatId) => {
         if (!chatId) return new Error("404");
         const chat = await chatModel.findById(chatId);
-        let users = [];
-        for (const memberId of chat.members) {
-            const user = await userModel.findById(memberId);
-            if (user) {
-                users.push(user);
-            }
-        }
+        if (!chat) return new Error("404");
+        const memberIds = chat.members;
+        const users = await userModel.find({_id: {$in: memberIds}});
         userIo.to(socket.id).emit("getUsersChat", users);
     });
 

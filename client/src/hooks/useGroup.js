@@ -16,7 +16,7 @@ export const useGroup = () => {
             avatar: groupAvatar,
             groupName: groupName,
             members: selectedUsers,
-        }));
+        }, user));
         setGroupName('');
         setGroupAvatar('');
         setSelectedUsers([user?._id]);

@@ -12,7 +12,12 @@ const GroupInfoModal = ({show, handleClose, groupInfo, currentChat}) => {
         isEdit,
         setAddUsers,
         setRemoveUsers,
-    } = useGroupInfoModal(currentChat);
+        setEditedGroupName,
+        setIsEditingGroupName,
+        handleSaveEditedGroupName,
+        isEditingGroupName,
+        editedGroupName,
+    } = useGroupInfoModal(groupInfo, currentChat);
 
     return (
         <Modal show={show} onHide={handleClose} centered>
@@ -21,7 +26,45 @@ const GroupInfoModal = ({show, handleClose, groupInfo, currentChat}) => {
             </Modal.Header>
             <Modal.Body className="modal-group">
                 <div className="mb-3">
-                    <h5>Group Name: {groupInfo.name || groupInfo?.groupName}</h5>
+                    {!isEditingGroupName ? (
+                        <div className="row align-items-center">
+                            <div className="col">
+                                <h5>Group Name: {groupInfo.name || groupInfo?.groupName}</h5>
+                            </div>
+                            {groupInfo.groupName && !isEditingGroupName && (
+                                <div className="col-auto">
+                                <span
+                                    onClick={() => setIsEditingGroupName(true)}
+                                >
+                                    ✎
+                                </span>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <>
+                            <div className="row align-items-center">
+                                <div className="col">
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={editedGroupName}
+                                        onChange={(e) => setEditedGroupName(e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-auto">
+                                <span
+                                    onClick={() => {
+                                        setIsEditingGroupName(false);
+                                        handleSaveEditedGroupName(editedGroupName);
+                                    }}
+                                >
+                                    ✔
+                                </span>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
                 <h5>Members:</h5>
                 <ListGroup className="list-group scroll-list-group mb-3">

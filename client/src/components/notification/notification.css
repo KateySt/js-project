@@ -9,6 +9,11 @@
     margin-right: 1rem;
 }
 
+.notifications-icon:hover {
+    color: white;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
 .notification-count {
     display: flex;
     background: #8603a5;
@@ -35,6 +40,8 @@
     background: #181d31;
     color: white;
     z-index: 5;
+    overflow-y: auto;
+    border-radius: 8px;
 }
 
 .notifications-header {
@@ -42,12 +49,19 @@
     padding-bottom: 0;
     display: flex;
     justify-content: space-between;
+    border-bottom: 1px solid #263159;
 }
 
 .mark-as-read {
     cursor: pointer;
-    font-weight: 700;
+    font-weight: 400;
     opacity: 0.8;
+    color: #8603a5;
+    transition: color 0.3s ease;
+}
+
+.mark-as-read:hover {
+    color: #ffffff;
 }
 
 .notification {
@@ -59,10 +73,16 @@
     flex-direction: column;
     cursor: pointer;
     padding: 0.5rem 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.notification:hover {
+    background-color: #374158;
 }
 
 .notification.not-read {
     background: #263159;
+    border-bottom: 1px solid #374158;
 }
 
 .notification-time {

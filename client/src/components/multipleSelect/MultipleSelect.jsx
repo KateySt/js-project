@@ -1,11 +1,13 @@
 import {useSelector} from "react-redux";
-import {selectUsers} from "../../features/user/UserSlice.js";
+import {selectUser, selectUsers} from "../../features/user/UserSlice.js";
 import {useEffect, useState} from "react";
 import ItemSelect from "./item/ItemSelect.jsx";
 import './multipleSelect.css';
 
 const MultipleSelect = ({setGroup, group}) => {
     const users = useSelector(selectUsers);
+    const user = useSelector(selectUser);
+    const potentialUsers = users.filter(member => member._id !== user._id);
     const [selectedUser, setSelectedUser] = useState(null);
 
     useEffect(() => {
@@ -21,7 +23,7 @@ const MultipleSelect = ({setGroup, group}) => {
         <>
             {users?.length !== 0 && (
                 <ul className="list-group scroll-list-group mt-2">
-                    {users?.map((value, index) => (
+                    {potentialUsers?.map((value, index) => (
                         <ItemSelect
                             key={index}
                             data={value}

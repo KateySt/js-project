@@ -14,3 +14,15 @@
     color: white;
     z-index: 5;
 }
+
+.possibility-box a {
+    display: block;
+    padding: 8px 16px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.possibility-box a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}

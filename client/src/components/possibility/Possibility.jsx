@@ -26,11 +26,11 @@ const Possibility = () => {
                             <AiOutlinePlusCircle className="me-2"/>
                             Creat new group
                         </Link>
-                        <div className="link-light text-decoration-none d-flex align-items-center"
+                        <Link className="link-light text-decoration-none d-flex align-items-center"
                              onClick={handleShowModal}>
                             <RxUpdate className="me-2"/>
                             Update profile
-                        </div>
+                        </Link>
                     </div>
                 </>
             }

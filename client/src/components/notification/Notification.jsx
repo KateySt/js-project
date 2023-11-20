@@ -43,7 +43,7 @@ const Notification = () => {
                         <div className="mark-as-read"
                              onClick={() => markAllNotificationAsRead()}
                         >
-                            Mark all as read
+                            Read all
                         </div>
                     </div>
                     {modifiedNotifications?.length === 0 ? <span>No notification yet ...</span> : null}

@@ -6,6 +6,14 @@ import {unreadNotificationsFun} from "../utils/unreadNotifications.js";
 
 function useUserChat(data) {
     const dispatch = useDispatch();
+    const user = useSelector(selectUser);
+    const onlineUsers = useSelector(selectUsersOnline);
+    const notifications = useSelector(selectNotifications);
+    const unreadNotifications = unreadNotificationsFun(notifications);
+    const thisUserNotifications = unreadNotifications?.filter(n => (n.chatId === data.chat?._id &&
+        n.senderId !== user?._id));
+    const isOnline = onlineUsers?.some((user) => user?.userId === data.user?._id);
+
     const markThisNotificationAsRead = useCallback((thisUserNotification, notifications) => {
         const mNotification = notifications.map(el => {
             let notification;
@@ -20,13 +28,6 @@ function useUserChat(data) {
         });
         dispatch(getNotification(mNotification));
     }, []);
-    const user = useSelector(selectUser);
-    const onlineUsers = useSelector(selectUsersOnline);
-    const notifications = useSelector(selectNotifications);
-    const unreadNotifications = unreadNotificationsFun(notifications);
-    const thisUserNotifications = unreadNotifications?.filter(n => (n.chatId === data.chat?._id &&
-        n.senderId !== user?._id));
-    const isOnline = onlineUsers?.some((user) => user?.userId === data.user?._id);
     const truncateText = (text) => {
         let shortText = text.substring(0, 20);
         if (text.length > 20) {

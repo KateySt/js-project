@@ -26,10 +26,10 @@ export const usePotentialChat = (potentialChat, creatChat) => {
         setShowSuggestions(true);
     };
 
-    const handleSuggestionClick = (selectedUser) => {
+    const handleSuggestionClick = async (selectedUser) => {
         setQuery(selectedUser.name);
         setShowSuggestions(false);
-        creatChat(selectedUser._id, user._id);
+        await creatChat(selectedUser._id, user._id);
     };
 
     const handleDocumentClick = (event) => {

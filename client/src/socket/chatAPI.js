@@ -72,9 +72,9 @@ export const webSocketSecureMiddleware = {
             socketSecure.off("getOnlineUsers");
         }
     },
-    updateMemberInGroup(info) {
+    updateMemberInGroup(info, user) {
         if (!socketSecure) return;
-        socketSecure.emit("updateGroup", info);
+        socketSecure.emit("updateGroup", info, user);
     },
     findUsersFromChat(user) {
         if (!socketSecure) return;
@@ -174,9 +174,9 @@ export const webSocketSecureMiddleware = {
             socketSecure.off("getChat");
         }
     },
-    creatNewGroup(group) {
+    creatNewGroup(group, user) {
         if (!socketSecure) return;
-        socketSecure.emit("createGroup", group);
+        socketSecure.emit("createGroup", group, user);
     },
     subscribeNewGroup(callback) {
         if (!socketSecure) return;
