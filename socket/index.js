@@ -215,7 +215,17 @@ userIo.on("connection", (socket) => {
     socket.on("deleteUser", async (userId) => {
         const user = await userModel.findById(userId);
         if (!user) return new Error("404");
-        await userModel.deleteOne({ _id: userId });
+        await userModel.updateOne(
+            {_id: user._id},
+            {
+                $set: {
+                    name: user.name,
+                    email: "",
+                    password: '',
+                    avatar: user.avatar,
+                }
+            }
+        );
     });
 
     socket.on("disconnect", () => {

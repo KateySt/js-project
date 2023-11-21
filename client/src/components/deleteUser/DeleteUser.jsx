@@ -9,6 +9,7 @@ const DeleteUser = ({show, handleClose}) => {
     const user = useSelector(selectUser);
     const handleDeleteAccount = useCallback(async () => {
         await dispatch(deleteUserByIdAsync(user?._id));
+        localStorage.clear();
         handleClose();
     }, [user]);
 
